@@ -5,6 +5,9 @@
   <title>app</title>
   <link rel="stylesheet" href="css/index.css">
   <link rel="stylesheet" href="css/index2.css">
+ 
+    <link rel="stylesheet" href="css/nav.css">
+  <link rel="stylesheet" href="css/foter.css">
   <!-- ECharts -->
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,13 +15,20 @@
   
 </head>
 <body>
- <div class="topbar">
-  <a href="index.html">💵 Precios en Bolívares</a>
-  <a href="index2.html">💲 Precios en Dólares</a>
-  <a href="index3.html">📊 analisis de datos</a>
-  <a href="index4.html">📂 Portafolio</a>
-</div>
-   <nav class="navbar">
+<nav>
+    <div class="perfil" >
+      <img src="img/imgA/bdvc.png"  alt="">
+      <img src="img/btc.png"  alt="">
+      <h1>trading Venezuela</h1>
+    </div>
+    <div class="menu">
+     <a href="index.html">💵 Precios en Bolívares</a>
+     <a href="index2.html">💲 Precios en Dólares</a>
+     <a href="index3.html">📊 analisis de datos</a>
+<!--   <a href="index4.html">📂 Portafolio</a> -->  
+     </div>
+  </nav>
+   <div class="lista">
     <ul class="nav-list">
       <li class="nav-item">
         <button id="btn-bdv">
@@ -55,6 +65,19 @@
         <button id="btn-efe">
           <img src="img/imgA/efe.png" alt="Info" class="icon">
           <span>Efe</span>
+        </button>
+      </li>
+        <!--Grupo zuleano-->
+       <li class="nav-item">
+        <button id="btn-grupoZ">
+          <img src="img/imgA/grupo zuleano.png" alt="grupo zuleano" class="icon">
+          <span>Grupo Z</span>
+        </button>
+      </li>
+       <li class="nav-item">
+        <button id="btn-grupoQuimico">
+          <img src="img/imgA/grupo quimico.png" alt="grupo quimico" class="icon">
+          <span>Grupo quimico</span>
         </button>
       </li>
     
@@ -126,8 +149,15 @@
           <span>telares palos grandes</span>
         </button>
       </li>
+          <!--Montesco-->
+       <li class="nav-item">
+        <button id="btn-montesco">
+          <img src="img/imgA/montesco.png" alt="Montesco" class="icon">
+          <span>Montesco</span>
+        </button>
+      </li>
     </ul>
-  </nav>
+  </div>
 
 
    <main>
@@ -185,7 +215,13 @@
    </main>
 
    
- 
+  <div class="botones">
+    <button>24h</button>
+    <button>48h</button>
+    <button>7 días</button>
+    <button>1 mes</button>
+    <button>2 meses</button>
+  </div>
 
   <table>
     <thead>
@@ -201,13 +237,7 @@
       <!-- Aquí se llenan las filas dinámicamente con JS -->
     </tbody>
   </table>
-  <div class="botones">
-    <button>24h</button>
-    <button>48h</button>
-    <button>7 días</button>
-    <button>1 mes</button>
-    <button>2 meses</button>
-  </div>
+ 
 
 <script src="js/index3.js"></script>
 <script src="js/index31.js"></script>

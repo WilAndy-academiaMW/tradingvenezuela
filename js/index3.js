@@ -210,7 +210,7 @@ async function inicializarApp() {
     });
       document.getElementById("btn-mercantil").addEventListener('click', () => {
         mostrarPrecios(23);
-        graficarVolumen(23, "Volumen invanca");
+        graficarVolumen(23, "Volumen mercantil");
         graficarEfectivoBs(23);
         graficarEfectivoUsd(23);
     });
@@ -228,7 +228,7 @@ async function inicializarApp() {
     });
       document.getElementById("btn-protinal").addEventListener('click', () => {
         mostrarPrecios(27);
-        graficarVolumen(27, "Volumen ceramica carabobo");
+        graficarVolumen(27, "Volumen protinal");
         graficarEfectivoBs(27);
         graficarEfectivoUsd(27);
     });
@@ -243,6 +243,24 @@ async function inicializarApp() {
         graficarVolumen(25, "Volumen telares palos grandes");
         graficarEfectivoBs(25);
         graficarEfectivoUsd(25);
+    });
+       document.getElementById("btn-montesco").addEventListener('click', () => {
+        mostrarPrecios(21);
+        graficarVolumen(21, "Volumen telares palos grandes");
+        graficarEfectivoBs(21);
+        graficarEfectivoUsd(21);
+    });
+      document.getElementById("btn-grupoZ").addEventListener('click', () => {
+        mostrarPrecios(16);
+        graficarVolumen(16, "Volumen grupo zuleano");
+        graficarEfectivoBs(16);
+        graficarEfectivoUsd(16);
+    });
+     document.getElementById("btn-grupoQuimico").addEventListener('click', () => {
+        mostrarPrecios(9);
+        graficarVolumen(9, "Volumen grupo zuleano");
+        graficarEfectivoBs(9);
+        graficarEfectivoUsd(9);
     });
 }
 

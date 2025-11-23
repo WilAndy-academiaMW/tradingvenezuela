@@ -141,4 +141,9 @@ main section{
 
 
 
-  
+  .lista{
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 30px;
+}

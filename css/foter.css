@@ -1,0 +1,22 @@
+.footer {
+  display: flex;
+  justify-content: space-around;
+
+  padding: 12px;
+}
+.footer button {
+  background: #222;
+  color: #fff;
+  border: none;
+  padding: 12px 25px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.footer button:hover {
+  background: #555;
+  box-shadow: 0 0 15px #0ff;
+  transform: translateY(-3px);
+}

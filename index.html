@@ -6,14 +6,25 @@
   <link rel="stylesheet" href="css/index.css">
   <!-- ECharts -->
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <link rel="stylesheet" href="css/nav.css">
+  <link rel="stylesheet" href="css/foter.css">
 </head>
 <body>
- <div class="topbar">
-  <a href="index1.html">💵 Precios en Bolívares</a>
-  <a href="index2.html">💲 Precios en Dólares</a>
-  <a href="index3.html">📊 analisis de datos</a>
-  <a href="index4.html">📂 Portafolio</a>
-</div>
+
+   <nav>
+    <div class="perfil" >
+      <img src="img/imgA/bdvc.png"  alt="">
+      <img src="img/btc.png"  alt="">
+      <h1>trading Venezuela</h1>
+    </div>
+    <div class="menu">
+     <a href="index.html">💵 Precios en Bolívares</a>
+     <a href="index2.html">💲 Precios en Dólares</a>
+     <a href="index3.html">📊 analisis de datos</a>
+<!--   <a href="index4.html">📂 Portafolio</a> -->  
+     </div>
+  </nav>
+ 
 
   <div class="main">
      <div class="panel left-panel">
@@ -197,11 +208,13 @@
 
   </div>
 
-  <div class="footer">
-    <button>Botón A</button>
-    <button>Botón B</button>
-    <button>Botón C</button>
-  </div>
+<div class="footer">
+  <button id="btn-rsi">RSI</button>
+  <button id="btn-macd">MACD</button>
+  <button id="btn-ichimoku">Ichimoku</button>
+  <button id="btn-bb">Bandas de Bollinger</button>
+</div>
+
 
   <script src="js/app.js"></script>
 </body>
