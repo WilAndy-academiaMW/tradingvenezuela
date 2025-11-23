@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>app</title>
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/index2.css">
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  
+</head>
+<body>
+ <div class="topbar">
+  <a href="index.html">💵 Precios en Bolívares</a>
+  <a href="index2.html">💲 Precios en Dólares</a>
+  <a href="index3.html">📊 analisis de datos</a>
+  <a href="index4.html">📂 Portafolio</a>
+</div>
+   <nav class="navbar">
+    <ul class="nav-list">
+      <li class="nav-item">
+        <button id="btn-bdv">
+          <img src="img/imgA/bdv.png" alt="Inicio" class="icon">
+          <span>BDV</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button id="btn-bdvc">
+          <img src="img/imgA/bdvc.png" alt="Perfil" class="icon">
+          <span>bdvc</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button id="btn-bnc">
+          <img src="img/imgA/bnc.png" alt="Config" class="icon">
+          <span>BNC</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button id="btn-envase">
+          <img src="img/imgA/envases.png" alt="Info" class="icon">
+          <span>envases</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button id="btn-ron">
+          <img src="img/imgA/santaTeresa.png" alt="Info" class="icon">
+          <span>Ron santaTeresa B</span>
+        </button>
+      </li>
+      <!--helado efe-->
+       <li class="nav-item">
+        <button id="btn-efe">
+          <img src="img/imgA/efe.png" alt="Info" class="icon">
+          <span>Efe</span>
+        </button>
+      </li>
+    
+      
+      
+    </ul>
+    <ul class="nav-list">
+        <!--provincial-->
+       <li class="nav-item">
+        <button id="btn-provincial">
+          <img src="img/imgA/provincial.png" alt="Info" class="icon">
+          <span>Provincial</span>
+        </button>
+      </li>
+       <li class="nav-item">
+        <button id="btn-caribe">
+          <img src="img/imgA/caribe.png" alt="banco caribe" class="icon">
+          <span>banco caribe</span>
+        </button>
+      </li>
+       <!--invanca-->
+       <li class="nav-item">
+        <button id="btn-invanca">
+          <img src="img/imgA/invanca.png" alt="invanca" class="icon">
+          <span>invanca B</span>
+        </button>
+      </li>
+       <!--banco de caribe-->
+   
+      <!--banco de Mercantil-->
+       <li class="nav-item">
+        <button id="btn-mercantil">
+          <img src="img/imgA/mercantil.png" alt="mercantil" class="icon">
+          <span>Mercantil B</span>
+        </button>
+      </li>
+        <!--banco de Mampa-->
+       <li class="nav-item">
+        <button id="btn-manpa">
+          <img src="img/imgA/Manpa.png" alt="manpa" class="icon">
+          <span>Manpa</span>
+        </button>
+      </li>
+         <!--banco de ceramica-->
+       <li class="nav-item">
+        <button id="btn-ceramica">
+          <img src="img/imgA/ceramica.png" alt="ceramica carabobo" class="icon">
+          <span>Ceramica</span>
+        </button>
+      </li>
+      <!--protinal-->
+       <li class="nav-item">
+        <button id="btn-protinal">
+          <img src="img/imgA/protinal.svg" alt="protinal" class="icon">
+          <span>protinal</span>
+        </button>
+      </li>
+      <!--proagro-->
+       <li class="nav-item">
+        <button id="btn-proagro">
+          <img src="img/imgA/proagro.png" alt="proagro" class="icon">
+          <span>proagro</span>
+        </button>
+      </li>
+       <!--proagro-->
+       <li class="nav-item">
+        <button id="btn-telares">
+          <img src="img/imgA/telares.png" alt="proagro" class="icon">
+          <span>telares palos grandes</span>
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+
+   <main>
+     <section>
+       <div class="precio" style="border: 1px solid green;text-align: center;" >
+         <h2>Precio</h2>
+         <div style="display: flex; text-align: center;width: 100%;" >
+            <div style="width: 50vh; border-right: 1px solid gray; text-align: center;">
+              <h3 >precios bs</h3>
+              <p id="precio-bs"></p>
+            </div>
+            <div>
+            <div style="width: 50vh; text-align: center;">
+                <h3 >precios usd</h3>
+             
+                <p id="precio-usd"></p>
+            </div>
+            <div>
+
+          </div>
+         </div>
+ 
+         </div>
+      
+    <div class="operaciones">
+  <h2>Titulos negociados</h2>
+  <canvas id="grafica-volumen"></canvas>
+</div>
+
+     </section>
+     <section>
+        <div class="ultimo_año">
+            <h2>Rendimiento ultimo año</h2>
+              <div >
+               <div style="border-right: 2px solid red;" >2</div>
+               <div style="border-right: 2px solid red;">3</div>
+               <div>4</div>
+
+              </div>
+        </div>
+       <div class="contratos">
+  <h2>efectivo bs</h2>
+  <canvas id="grafica-efectivo-bs"></canvas>
+</div>
+ <div class="contratos">
+  <h2>efectivo usd</h2>
+  <canvas id="grafica-efectivo-usd"></canvas>
+</div>
+
+        
+
+
+     </section>
+     
+   </main>
+
+   
+ 
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Símbolo</th>
+        <th>Monto Bs</th>
+        <th>Monto USD</th>
+        <th>Títulos</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Aquí se llenan las filas dinámicamente con JS -->
+    </tbody>
+  </table>
+  <div class="botones">
+    <button>24h</button>
+    <button>48h</button>
+    <button>7 días</button>
+    <button>1 mes</button>
+    <button>2 meses</button>
+  </div>
+
+<script src="js/index3.js"></script>
+<script src="js/index31.js"></script>
+  </body>
+</html>

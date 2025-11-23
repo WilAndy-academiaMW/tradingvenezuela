@@ -1,0 +1,144 @@
+
+
+.navbar {
+
+  padding: 0.5rem 1rem;
+}
+.nav-list {
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+  margin: 0;
+  padding: 0;
+}
+.nav-item button {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+.nav-item button:hover {
+  transform: scale(1.1);
+  color: #000;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  filter: drop-shadow(0 0 4px rgba(0,0,0,0.5));
+}
+
+section {
+  padding: 2rem;
+}
+
+main{
+  display: flex;
+}
+main section{
+  width: 50%;
+  height: auto;
+}
+
+.ultimo_año{
+  width: 100%;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  border: 1px solid orange;
+}
+.ultimo_año div{
+  width: 100%;
+  display: flex;
+}
+.ultimo_año div div{
+  width: 33%;
+  align-items: center;
+  justify-content: center;
+}
+.precio{
+    height: 300px;
+}
+.contratos{
+  text-align: center;
+  border: 1px solid green;
+  margin-top: 70px;
+}
+.operaciones{
+  border: 1px solid green;
+  margin-top: 200px;
+}
+
+
+ table {
+    width: 80%;
+    margin: 0;
+    border-collapse: collapse;
+    margin: 20px auto;
+    font-size: 15px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.3);
+    border: 2px solid #333;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  thead {
+    background: linear-gradient(90deg, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  th, td {
+    padding: 12px 15px;
+    text-align: center;
+    border: 1px solid #ccc;
+    color: #000;
+    
+   
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+  tr:hover {
+    background-color: #d1f0e0;
+    transition: 0.3s;
+  }
+
+  /* Botones brutales */
+  .botones {
+    margin: 30px 0;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+  }
+
+  .botones button {
+    padding: 12px 25px;
+    border: 2px solid #0f2027;
+    border-radius: 30px;
+    background: linear-gradient(45deg, #ff512f, #dd2476);
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+    transition: transform 0.2s, background 0.3s;
+  }
+
+  .botones button:hover {
+    transform: scale(1.1);
+    background: linear-gradient(45deg, #dd2476, #ff512f);
+  }
+
+
+
+  

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>app</title>
+  <link rel="stylesheet" href="css/index.css">
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+</head>
+<body>
+  <div class="topbar">
+   <a href="index.html">💵 Precios en Bolívares</a>
+   <a href="index2.html">💲 Precios en Dólares</a>
+   <a href="index3.html">📊 analisis de datos</a>
+   <a href="index4.html">📂 Portafolio</a>
+</div>
+
+  <div class="main">
+     <div class="panel left-panel">
+       <h3>Suite de Herramientas</h3>
+       <div class="tool-buttons">
+        <button id="btn-tendencia">Lineas de Tendencia</button>
+        <div class="pivote-control">
+       <button id="btn-pivotes">Lineas de Pivote</button>
+       <label for="tol">Tolerancia:</label>
+       <input type="range" id="tol" min="0.0005" max="0.1" step="0.01" value="0.5">
+       <span id="tol-value"></span>
+        </div>
+        <button id="btn-fibonacci">fibonacci</button>
+        <button id="btn-regla">Regla</button>
+         <button id="btn-lineas">lineas</button>
+      </div>
+</div>
+
+
+    <div class="panel center-panel">
+      <div id="chart-container" style="width:100%;height:100%;"></div>
+    </div>
+
+    <div class="panel right-panel">
+      <h3>Activos</h3>
+      <ul>
+        <li >
+          <button data-path="archivos/bdv.csv" data-label="Banco de Venezuela">
+            <img src="img/imgA/bdv.png" alt="banco de Venezuela" style="width: 20px; height: 20px;">
+            Banco de Venezuela
+          </button>
+        </li>
+        <li>
+          <button data-path="archivos/ron.csv" data-label="Ron santa teresa">
+             <img src="img/imgA/santaTeresa.png" alt="banco de Venezuela" style="width: 20px; height: 20px;">
+            Ron santa teresa
+          </button>
+        </li>
+             <!--  BDVC--> 
+        <li>
+          <button data-path="archivos/bdvc.csv" data-label="BDVC">
+             <img src="img/imgA/bdvc.png" alt="banco de Venezuela" style="width: 20px; height: 20px;">
+            BDVC
+          </button>
+        </li>
+         <li>
+          <button data-path="archivos/manpa.csv" data-label="Manufacturas de Papel">
+             <img src="img/imgA/Manpa.png" alt="Manufacturas de Papel" style="width: 20px; height: 20px;">
+            Manufacturas de Papel
+          </button>
+        </li>
+        <li>
+          <button data-path="archivos/proagro.csv" data-label=" Proagro">
+             <img src="img/imgA/proagro.png" alt="banco de Venezuela" style="width: 20px; height: 20px;">
+            Proagro
+          </button>
+        </li>
+         <li>
+          <button data-path="archivos/mercantil.csv" data-label="Banco Mercantil">
+             <img src="img/imgA/mercantil.png" alt="Banco Mercantil" style="width: 20px; height: 20px;">
+            Banco Mercantil
+          </button>
+        </li>
+       <li>
+          <button data-path="archivos/Efe.csv" data-label="helados efe">
+             <img src="img/imgA/efe.png" alt="Banco Mercantil" style="width: 20px; height: 20px;">
+            helados efe
+          </button>
+        </li>
+         <!--protinal--> 
+        <li>
+          <button data-path="archivos/protinal.csv" data-label="protinal">
+             <img src="img/imgA/protinal.svg" alt="Banco Mercantil" style="width: 20px; height: 20px;">
+             protinal
+          </button>
+        </li>
+         <!-- BNC -->
+        <li>
+          <button data-path="archivos/bnc.csv" data-label="Banco Nacional de Credito">
+             <img src="img/imgA/bnc.png" alt="Banco Mercantil" style="width: 20px; height: 20px;">
+             BNC
+          </button>
+        </li>
+         <!--   Montesco -->
+         <li>
+          <button data-path="archivos/ceramica.csv" data-label="Ceramica Carabobo">
+             <img src="img/imgA/ceramica.png" alt="Ceramica Carabobo" style="width: 20px; height: 20px;">
+             Ceramica Carabobo
+          </button>
+        </li>
+         <!--   Montesco -->
+        <li>
+          <button data-path="archivos/grupoZ.csv" data-label="Grupo Zuleano">
+             <img src="img/imgA/grupo zuleano.png" alt="Grupo Zuleano" style="width: 20px; height: 20px;">
+             Grupo Zuleano
+          </button>
+        </li>
+          <li>
+          <button data-path="archivos/Invaca.csv" data-label="Invaca">
+             <img src="img/imgA/invanca.png" alt="Grupo Zuleano" style="width: 20px; height: 20px;">
+             Invaca
+          </button>
+        </li>
+         <!--   Montesco -->
+        <li>
+          <button data-path="archivos/Invaca.csv" data-label="Montesco">
+             <img src="img/imgA/montesco.png" alt="Grupo Zuleano" style="width: 20px; height: 20px;">
+             Montesco
+          </button>
+        </li>
+         <!--  Banco del Caribe -->
+           <li>
+         
+          <button data-path="archivos/Banco del Caribe.csv" data-label="Banco del Caribe">
+             <img src="img/imgA/caribe.png" alt="Grupo Zuleano" style="width: 20px; height: 20px;">
+             Banco del Caribe
+          </button>
+        </li>
+           <!-- envases-->
+        <li>
+          <button data-path="archivos/envases.csv" data-label="Envases">
+             <img src="img/imgA/envases.png" alt="envases" style="width: 20px; height: 20px;">
+           Envases
+          </button>
+        </li>
+         <li>
+          <button data-path="archivos/Corporacion Grupo Quimico.csv" data-label="Corporacion Grupo Quimico">
+             <img src="img/imgA/grupo quimico.png" alt="Corporacion Grupo Quimico" style="width: 20px; height: 20px;">
+             Corporacion Grupo Quimico
+          </button>
+        </li>
+          <!--  sinvesa -->
+       <li>
+          <button data-path="archivos/Siderurgica Venezolana.csv" data-label="Sivensa ">
+             <img src="img/imgA/caribe.png" alt="Sivensa " style="width: 20px; height: 20px;">
+             Sivensa 
+          </button>
+        </li>
+         <!--  Provincial-->
+       <li>
+          <button data-path="archivos/Provincial.csv" data-label="Banco provincial ">
+             <img src="img/imgA/provincial.png" alt=" Banco provincial " style="width: 20px; height: 20px;">
+             Banco provincial
+          </button>
+        </li>
+            <li>
+          <button data-path="archivos/crece.csv" data-label="I.CRECEPYMES -B-">
+             <img src="img/imgA/crece.png" alt=" I.CRECEPYMES -B- " style="width: 20px; height: 20px;">
+             I.CRECEPYMES -B-
+          </button>
+        </li>
+         <!--    C.CAPITAL "B"-->
+         <li>
+          <button data-path="archivos/clave.csv" data-label="C.CAPITAL  ">
+             <img src="img/imgA/perCapital.png" alt=" C.CAPITAL" style="width: 20px; height: 20px;">
+             C.CAPITAL "B"
+          </button>
+        </li>
+        <!-- Telares de Palo Grande-->
+         <li>
+          <button data-path="archivos/Telares de Palo Grande.csv" data-label="Telares de Palo Grande">
+             <img src="img/imgA/telares.png" alt="Telares de Palo Grande" style="width: 20px; height: 20px;">
+            Telares de Palo Grande
+          </button>
+        </li>
+  
+       
+         <!-- F.PETROLIA "B-->
+         <li>
+          <button data-path="archivos/petroleo.csv" data-label="F.PETROLIA B">
+             <img src="img/imgA/pretrolea.png" alt="F.PETROLIA "B" style="width: 20px; height: 20px;">
+           F.PETROLIA "B"
+          </button>
+        </li>
+             <!-- FAB.N.CEMENTOS-->
+         <li>
+          <button data-path="archivos/cemento.csv" data-label="FAB.N.CEMENTOS">
+             <img src="img/imgA/cemento.png" alt="F.PETROLIA B" style="width: 20px; height: 20px;">
+                  FAB.N.CEMENTOS
+          </button>
+        </li>
+      
+    
+       
+  
+      
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer">
+  <button id="btn-rsi">RSI</button>
+  <button id="btn-macd">MACD</button>
+  <button id="btn-ichimoku">Ichimoku</button>
+  <button id="btn-bb">Bandas de Bollinger</button>
+
+
+
+
+</div>
+
+
+  <script src="js/app2.js"></script>
+</body>
+</html>

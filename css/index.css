@@ -1,0 +1,224 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #0f0f0f;
+  color: #eee;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Barra superior */
+.topbar {
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(90deg, #ff0066, #ffcc00);
+  padding: 10px;
+}
+.topbar button {
+  background: #222;
+  color: #fff;
+  border: none;
+  margin: 0 10px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.topbar button:hover {
+  background: #444;
+  transform: scale(1.1);
+}
+
+/* Paneles principales */
+.main {
+  flex: 1;
+  display: flex;
+  height: 80%;
+  background: #1a1a1a;
+}
+.panel {
+  padding: 15px;
+  border: 1px solid #333;
+}
+.left-panel {
+  width: 20%;
+  background: #111;
+}
+.center-panel {
+  flex: 1;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.center-panel canvas {
+  width: 100%;
+  height: 100%;
+  max-height: 520px;
+}
+.right-panel {
+  width: 25%;
+  background: #111;
+}
+.right-panel ul {
+  list-style: none;
+  padding: 0;
+}
+.right-panel button {
+  width: 100%;
+  background: #222;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  margin: 5px 0;
+  font-size: 15px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+  display: flex; justify-content: center;
+}
+.right-panel button:hover {
+  background: #444;
+  box-shadow: 0 0 10px #0ff;
+  transform: scale(1.05);
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-around;
+  background: linear-gradient(90deg, #00f, #0ff);
+  padding: 12px;
+}
+.footer button {
+  background: #222;
+  color: #fff;
+  border: none;
+  padding: 12px 25px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.footer button:hover {
+  background: #555;
+  box-shadow: 0 0 15px #0ff;
+  transform: translateY(-3px);
+}
+.topbar a {
+  background: #222;
+  color: #fff;
+  text-decoration: none;
+  margin: 0 10px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  display: inline-block;
+}
+
+.topbar a:hover {
+  background: #444;
+  transform: scale(1.1);
+}
+
+/* Panel izquierdo */
+.left-panel {
+  background: #111;
+  color: #fff;
+  padding: 20px;
+  border-right: 2px solid #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.left-panel h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #ffcc00;
+}
+.right-panel h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #ffcc00;
+}
+
+
+/* Contenedor de botones */
+.tool-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Botones estilo brutal */
+.tool-buttons button {
+  background: linear-gradient(135deg, #222, #444);
+  color: #fff;
+  border: 1px solid #555;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 8px rgba(255, 204, 0, 0.3);
+}
+
+.tool-buttons button:hover {
+  background: linear-gradient(135deg, #ffcc00, #ff9900);
+  color: #000;
+  border: 1px solid #ffcc00;
+  box-shadow: 0 0 12px rgba(255, 204, 0, 0.8);
+  transform: scale(1.05);
+}
+
+
+.pivote-control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  background: #111;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #333;
+}
+
+.pivote-control label {
+  color: #ffaa00;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+#tol {
+  width: 100%;
+}
+
+#tol-value {
+  color: #fff;
+  font-weight: bold;
+}
+
+.panel.right-panel {
+  max-height: 800px;   /* ajusta la altura que quieras */
+  overflow-y: auto;    /* activa scroll vertical solo dentro del panel */
+  border: 1px solid #ccc; /* opcional, para ver el área */
+  padding: 10px;
+ 
+}
