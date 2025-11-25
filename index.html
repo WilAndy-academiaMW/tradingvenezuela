@@ -5,11 +5,17 @@
   <title>app</title>
   <link rel="stylesheet" href="css/index.css">
   <!-- ECharts -->
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+
+<script src="https://code.highcharts.com/modules/annotations.js"></script>
+
+
   <link rel="stylesheet" href="css/nav.css">
+   
   <link rel="stylesheet" href="css/foter.css">
 </head>
 <body>
+ 
 
    <nav>
     <div class="perfil" >
@@ -24,30 +30,43 @@
 <!--   <a href="index4.html">📂 Portafolio</a> -->  
      </div>
   </nav>
- 
 
   <div class="main">
      <div class="panel left-panel">
-  <h3>Suite de Herramientas</h3>
-  <div class="tool-buttons">
-   <button id="btn-tendencia">Lineas de Tendencia</button>
-    <button id="btn-pivotes">Lineas de pivote</button>
+       <h3>Suite de Herramientas</h3>
+       <div class="tool-buttons">
+        <button id="btn-tendencia">Lineas de Tendencia</button>
+        <div class="pivote-control">
+        <button id="btn-pivotes">Lineas de Pivote</button>
+        <label for="tol">Tolerancia:</label>
+        <input type="range" id="tol" min="0.0005" max="0.1" step="0.01" value="0.5">
+        <span id="tol-value"></span>
+        </div>
+        <div class="pivote-control">
+         <button id="btn-pivotes">Regla</button>
+        
+         <span id="tol-value">2</span>
+          <span id="tol-value">2</span>
+        </div>
+        <button id="btn-fibonacci">fibonacci</button>
+        <button id="btn-regla">Regla</button>
+         <button onclick="activarLinea()">Dibujar línea</button>
 
+       
 
-    <button id="btn-dibujos">Dibujos</button>
-    <button id="btn-alertas">Alertas</button>
-    <button id="btn-backtest">Backtest</button>
-  </div>
+      </div>
 </div>
 
 
-    <div class="panel center-panel">
-      <div id="chart-container" style="width:100%;height:100%;"></div>
+
+   <!--   <div id="chart-container" style="width:100%;height:100%;"></div>--> 
+<div class="panel center-panel">
+    <div id="chart-container" style="height:500px; min-width:600px"></div>
     </div>
 
-      <div class="panel right-panel">
+    <div class="panel right-panel">
       <h3>Activos</h3>
-     <ul>
+      <ul>
         <li >
           <button data-path="archivos/bdv.csv" data-label="Banco de Venezuela">
             <img src="img/imgA/bdv.png" alt="banco de Venezuela" style="width: 20px; height: 20px;">
@@ -73,11 +92,10 @@
             Manufacturas de Papel
           </button>
         </li>
-        <!-- envases-->
         <li>
-          <button data-path="archivos/envases.csv" data-label="Envases">
-             <img src="img/imgA/envases.png" alt="envases" style="width: 20px; height: 20px;">
-           Envases
+          <button data-path="archivos/proagro.csv" data-label=" Proagro">
+             <img src="img/imgA/proagro.png" alt="banco de Venezuela" style="width: 20px; height: 20px;">
+            Proagro
           </button>
         </li>
          <li>
@@ -139,6 +157,13 @@
           <button data-path="archivos/Banco del Caribe.csv" data-label="Banco del Caribe">
              <img src="img/imgA/caribe.png" alt="Grupo Zuleano" style="width: 20px; height: 20px;">
              Banco del Caribe
+          </button>
+        </li>
+           <!-- envases-->
+        <li>
+          <button data-path="archivos/envases.csv" data-label="Envases">
+             <img src="img/imgA/envases.png" alt="envases" style="width: 20px; height: 20px;">
+           Envases
           </button>
         </li>
          <li>
@@ -206,16 +231,24 @@
     </div>
   </div>
 
-  </div>
-
-<div class="footer">
+  <div class="footer">
   <button id="btn-rsi">RSI</button>
   <button id="btn-macd">MACD</button>
   <button id="btn-ichimoku">Ichimoku</button>
   <button id="btn-bb">Bandas de Bollinger</button>
+
+
+
+
 </div>
 
 
-  <script src="js/app.js"></script>
+
+
+
+
+
+
+<script src="js/app.js"></script>
 </body>
 </html>

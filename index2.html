@@ -30,23 +30,49 @@
   <div class="main">
      <div class="panel left-panel">
        <h3>Suite de Herramientas</h3>
+
+       <!--linea de tendencia -->
        <div class="tool-buttons">
-        <button id="btn-tendencia">Lineas de Tendencia</button>
-        <div class="pivote-control">
-       <button id="btn-pivotes">Lineas de Pivote</button>
-       <label for="tol">Tolerancia:</label>
-       <input type="range" id="tol" min="0.0005" max="0.1" step="0.01" value="0.5">
-       <span id="tol-value"></span>
+          <div class="pivote-control"> 
+          <button id="btn-tendencia">Lineas de Tendencia</button>
         </div>
-        <button id="btn-fibonacci">fibonacci</button>
-        <button id="btn-regla">Regla</button>
-         <button id="btn-lineas">lineas</button>
+            <!--zonas pivotes--> 
+        <div class="pivote-control">
+          <button id="btn-pivotes">Lineas de Pivote</button>
+          <input type="range" id="tol" min="0.0005" max="0.1" step="0.01" value="0.5">
+        </div>
+           <!--fibonacci--> 
+           <div class="pivote-control">
+       <button id="btn-fibonacci">fibonacci</button>
+           </div>
+
+            <!--regla--> 
+        <div class="pivote-control">
+            <button id="btn-regla">Regla</button>
+        </div>
+           <!--ondas de elliot--> 
+        <div class="pivote-control">
+            <button id="btn-ondas">ondas de heliot</button>
+            <div style="display: flex; justify-content: center; "> 
+            <button id="ondas2" >2</button>
+            <button id="ondas3">3</button>
+             <button id="ondas4">4</button>
+              <button id="ondas5">5</button>
+            </div>
+            
+               
+        </div>
+       
+ 
       </div>
+      
 </div>
 
 
-    <div class="panel center-panel">
-      <div id="chart-container" style="width:100%;height:100%;"></div>
+    <div class="panel center-panel" style="display: flex; flex-direction: column;">
+     
+      <div id="chart-container" style="width:1000px;height:600px;"></div>
+       <div id="mensaje" style="width: 100%; height: 100px; color: white;"></div>
     </div>
 
     <div class="panel right-panel">

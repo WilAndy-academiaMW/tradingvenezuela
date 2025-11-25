@@ -619,80 +619,419 @@ document.getElementById("btn-pivotes")?.addEventListener("click", () => {
   window.mostrarZonasPivote();
 });
 
-// Estado de la regla
-let reglaLineaActiva = false;
-let primerPunto = null;
-const lineaId = 'regla-linea';
 
-// Activar/Desactivar regla
-window.activarReglaLinea = function () {
-  if (!chart) {
-    console.warn('No hay instancia de gráfico inicializada');
+
+
+
+
+
+let isOndasVisible = false;
+let elliottClicks = [];
+
+function mostrarMensaje(texto) {
+  const mensajeDiv = document.getElementById('mensaje');
+  if (mensajeDiv) mensajeDiv.textContent = texto;
+}
+
+window.mostrarOndas = function () {
+  const myChart = echarts.getInstanceByDom(document.getElementById("chart-container"));
+  if (!myChart) {
+    console.error("Ondas: no hay gráfico activo.");
     return;
   }
 
-  reglaLineaActiva = !reglaLineaActiva;
-  primerPunto = null;
+  // Toggle: activar/desactivar
+  if (isOndasVisible) {
+    const option = myChart.getOption();
+    const soloVelas = option.series.filter(s => s.type === 'candlestick');
+    myChart.setOption({ series: soloVelas }, { replaceMerge: ['series'] });
+    elliottClicks = [];
+    isOndasVisible = false;
+    mostrarMensaje("Ondas desactivadas.");
+    return;
+  }
 
-  if (reglaLineaActiva) {
-    console.log('Modo regla activado: haz dos clics en el gráfico');
-    chart.getZr().on('click', onClickReglaLinea);
+  // Activar
+  elliottClicks = [];
+  isOndasVisible = true;
+  mostrarMensaje("Ondas activadas. Marca 3 puntos: inicio, fin de onda 1, retroceso de onda 2.");
+
+  // Re-enganchar evento de clic
+  myChart.off('click');
+  myChart.on('click', function (params) {
+    if (!isOndasVisible) return;
+    if (!params || !params.data) {
+      mostrarMensaje("Debes hacer clic sobre una vela.");
+      return;
+    }
+    const fecha = params.name;
+    const precio = params.data[1]; // Close
+    elliottClicks.push([fecha, precio]);
+
+    const n = elliottClicks.length;
+    if (n === 1) mostrarMensaje(`Click 1: inicio del impulso → ${fecha} USD ${precio.toFixed(2)}`);
+    else if (n === 2) mostrarMensaje(`Click 2: fin de la onda 1 → ${fecha} USD ${precio.toFixed(2)}`);
+    else if (n === 3) mostrarMensaje(`Click 3: retroceso de la onda 2 → ${fecha} USD ${precio.toFixed(2)}. Ya puedes calcular Onda 2.`);
+    else mostrarMensaje(`Click ${n}: punto capturado → ${fecha} USD ${precio.toFixed(2)}`);
+  });
+
+  // Botones de ondas
+  document.getElementById("ondas2").onclick = () => {
+    const myChart = echarts.getInstanceByDom(document.getElementById("chart-container"));
+    if (elliottClicks.length < 3) {
+      mostrarMensaje("Necesitas al menos 3 clics para Onda 2.");
+      return;
+    }
+    // Dibujar Onda 1 (click1→click2)
+    dibujarLineaSimple(myChart, 0, 1, "Onda 1", "#ffaa00");
+    // Dibujar Onda 2 (click2→click3 con validación)
+    dibujarOnda(myChart, 1, 2, "Onda 2");
+  };
+  document.getElementById("ondas3").onclick = () => dibujarOnda(myChart, 2, 3, "Onda 3");
+  document.getElementById("ondas4").onclick = () => dibujarOnda(myChart, 3, 4, "Onda 4");
+  document.getElementById("ondas5").onclick = () => dibujarOnda(myChart, 4, 5, "Onda 5");
+};
+
+// Función para dibujar una onda con validación
+function dibujarOnda(myChart, idx1, idx2, nombreOnda) {
+  const necesarios = idx2 + 1;
+  if (elliottClicks.length < necesarios) {
+    mostrarMensaje(`Faltan puntos: necesitas al menos ${necesarios} clics para ${nombreOnda}.`);
+    return;
+  }
+
+  const [fecha1, precio1] = elliottClicks[idx1];
+  const [fecha2, precio2] = elliottClicks[idx2];
+
+  const extPorc = (((precio2 - precio1) / precio1) * 100).toFixed(2);
+  const retPorc = (((precio1 - precio2) / precio1) * 100).toFixed(2);
+
+  let color = '#aa00ff'; // violeta por defecto
+  let etiqueta = "";
+
+  if (nombreOnda === 'Onda 2') {
+    const r = parseFloat(retPorc);
+    if (r >= 50 && r <= 61.8) { color = '#ff0000'; etiqueta = `Onda 2 ${retPorc}%`; }
+  } else if (nombreOnda === 'Onda 3') {
+    const e = parseFloat(extPorc);
+    if (e >= 161) { color = '#00ff00'; etiqueta = `Onda 3 ${extPorc}%`; }
+  } else if (nombreOnda === 'Onda 4') {
+    const r = parseFloat(retPorc);
+    const precioOnda1 = elliottClicks[1]?.[1];
+    if (precioOnda1 !== undefined && r >= 23 && precio2 > precioOnda1) {
+      color = '#0000ff'; etiqueta = `Onda 4 ${retPorc}%`;
+    }
+  } else if (nombreOnda === 'Onda 5') {
+    const e = parseFloat(extPorc);
+    if (e >= 60) { color = '#00ff00'; etiqueta = `Onda 5 ${extPorc}%`; }
+  }
+
+  const option = myChart.getOption();
+  const nuevasSeries = option.series.slice();
+
+  nuevasSeries.push({
+    type: 'line',
+    data: [[fecha1, precio1], [fecha2, precio2]],
+    lineStyle: { color, width: 2 },
+    symbol: 'circle',
+    symbolSize: 8,
+    itemStyle: { color },
+    yAxisIndex: 0,
+    label: {
+      show: true, // SIEMPRE visible
+      position: 'middle',
+      formatter: etiqueta || nombreOnda,
+      color: '#fff',
+      fontWeight: 'bold',
+      fontSize: 22
+    }
+  });
+
+  myChart.setOption({ series: nuevasSeries }, { replaceMerge: ['series'] });
+
+  if (etiqueta) mostrarMensaje(`Se dibujó ${etiqueta}`);
+  else mostrarMensaje(`${nombreOnda} no cumplió condiciones, se pintó violeta`);
+}
+
+// Función para dibujar Onda 1 sin validación
+function dibujarLineaSimple(myChart, idx1, idx2, nombre, color) {
+  const [fecha1, precio1] = elliottClicks[idx1];
+  const [fecha2, precio2] = elliottClicks[idx2];
+
+  const option = myChart.getOption();
+  const nuevasSeries = option.series.slice();
+
+  nuevasSeries.push({
+    type: 'line',
+    data: [[fecha1, precio1], [fecha2, precio2]],
+    lineStyle: { color, width: 2 },
+    symbol: 'circle',
+    symbolSize: 8,
+    itemStyle: { color },
+    yAxisIndex: 0,
+    label: {
+      show: true, // SIEMPRE visible
+      position: 'middle',
+      formatter: nombre,
+      color: '#fff',
+      fontWeight: 'bold',
+      fontSize: 20
+    }
+  });
+
+  myChart.setOption({ series: nuevasSeries }, { replaceMerge: ['series'] });
+  mostrarMensaje(`Se dibujó ${nombre}`);
+}
+
+// Botón principal toggle
+document.getElementById("btn-ondas").addEventListener("click", () => window.mostrarOndas());
+
+
+
+//regla
+
+let reglaActiva = false;
+let reglaClicks = 0;
+let puntosRegla = [];
+
+function mostrarMensaje(texto) {
+  const mensajeDiv = document.getElementById('mensaje');
+  if (mensajeDiv) mensajeDiv.textContent = texto;
+  console.log(texto); // 👈 también lo mostramos en consola
+}
+
+window.mostrarRegla = function () {
+  const chart = echarts.getInstanceByDom(document.getElementById("chart-container"));
+  if (!chart) {
+    console.error("Regla: no hay gráfico activo.");
+    return;
+  }
+
+  // Resetear estados
+  reglaActiva = false;
+  reglaClicks = 0;
+  puntosRegla = [];
+
+  // Quitar eventos previos
+  chart.off('click');
+
+  // Conectar botón
+  document.getElementById('btn-regla').onclick = () => {
+    if (reglaActiva) {
+      // Si estaba activa → limpiar todas las reglas
+      const option = chart.getOption();
+      const series = option.series.slice();
+      const idxVela = series.findIndex(s => (s.type === 'candlestick'));
+      if (idxVela !== -1) {
+        series[idxVela].markArea = { data: [] };
+        chart.setOption({ series }, { replaceMerge: ['series'] });
+      }
+      reglaActiva = false;
+      reglaClicks = 0;
+      puntosRegla = [];
+      mostrarMensaje("Regla desactivada. Todas las reglas borradas.");
+    } else {
+      // Activar regla
+      reglaActiva = true;
+      reglaClicks = 0;
+      puntosRegla = [];
+      mostrarMensaje("Regla activada. Haz clic en dos velas para dibujar una regla.");
+    }
+  };
+
+  // Registrar evento de clic
+  chart.on('click', function (params) {
+    if (!reglaActiva) return;
+    if (params.seriesType !== 'candlestick') return;
+
+    const fecha = params.name;
+    const valores = params.data;
+    const precioCierre = valores[1];
+
+    puntosRegla.push({ fecha, precio: precioCierre });
+    reglaClicks++;
+
+    mostrarMensaje(`Click ${reglaClicks}: ${fecha} → USD ${precioCierre.toFixed(2)}`);
+
+    // Cada dos clics → dibujar una regla
+    if (reglaClicks % 2 === 0) {
+      const p1 = puntosRegla[reglaClicks - 2];
+      const p2 = puntosRegla[reglaClicks - 1];
+
+      const esSubida = p2.precio > p1.precio;
+      const porcentaje = esSubida
+        ? (((p2.precio - p1.precio) / p1.precio) * 100).toFixed(2) + "%"
+        : (((p1.precio - p2.precio) / p1.precio) * 100).toFixed(2) + "%";
+
+      const colorFondo = esSubida ? 'rgba(0,255,0,0.25)' : 'rgba(255,0,0,0.25)';
+      const colorBorde = esSubida ? '#00ff00' : '#ff0000';
+
+      const yMin = Math.min(p1.precio, p2.precio);
+      const yMax = Math.max(p1.precio, p2.precio);
+
+      const option = chart.getOption();
+      const series = option.series.slice();
+      const idxVela = series.findIndex(s => (s.type === 'candlestick'));
+      if (idxVela === -1) return;
+
+      if (!series[idxVela].markArea) {
+        series[idxVela].markArea = { data: [] };
+      }
+
+      series[idxVela].markArea.data.push([
+        {
+          name: porcentaje,
+          coord: [p1.fecha, yMin],
+          itemStyle: {
+            color: colorFondo,
+            borderColor: colorBorde,
+            borderWidth: 2
+          },
+          label: {
+            show: true,
+            position: 'inside',
+            color: '#fff',
+            fontWeight: 'bold',
+            formatter: porcentaje
+          }
+        },
+        {
+          coord: [p2.fecha, yMax]
+        }
+      ]);
+
+      chart.setOption({ series }, { replaceMerge: ['series'] });
+      mostrarMensaje(`Se dibujó regla entre ${p1.fecha} y ${p2.fecha} → ${porcentaje}`);
+      console.log("Rectángulo dibujado:", p1, p2, porcentaje); // 👈 log extra en consola
+    }
+  });
+  document.getElementById('btn-regla').onclick = () => {
+  const chart = echarts.getInstanceByDom(document.getElementById("chart-container"));
+  if (!chart) return;
+
+  if (reglaActiva) {
+    // 🔴 Si estaba activa → limpiar todas las reglas
+    const option = chart.getOption();
+    const series = option.series.slice();
+    const idxVela = series.findIndex(s => (s.type === 'candlestick'));
+    if (idxVela !== -1) {
+      series[idxVela].markArea = { data: [] }; // vaciar todas las áreas
+      chart.setOption({ series }, { replaceMerge: ['series'] });
+    }
+    reglaActiva = false;
+    reglaClicks = 0;
+    puntosRegla = [];
+    mostrarMensaje("Regla desactivada. Todas las reglas borradas.");
+    console.log("Todas las reglas eliminadas.");
   } else {
-    console.log('Modo regla desactivado');
-    chart.getZr().off('click', onClickReglaLinea);
-    chart.setOption({ graphic: [] }, { replaceMerge: ['graphic'] });
+    // 🟢 Si estaba apagada → activar
+    reglaActiva = true;
+    reglaClicks = 0;
+    puntosRegla = [];
+    mostrarMensaje("Regla activada. Haz clic en dos velas para dibujar una regla.");
+    console.log("Regla activada, esperando clics...");
   }
 };
 
-// Handler de clic
-function onClickReglaLinea(event) {
-  const dataCoord = chart.convertFromPixel({ xAxisIndex: 0, yAxisIndex: 0 }, [event.offsetX, event.offsetY]);
-  if (!dataCoord || !Array.isArray(dataCoord)) {
-    console.warn('Clic fuera del área del gráfico');
+};
+
+document.getElementById("btn-regla").addEventListener("click", () => window.mostrarRegla());
+
+
+
+
+let tendenciaActiva = false;
+let tendenciaClicks = 0;
+let puntosTendencia = [];
+
+function mostrarMensaje(texto) {
+  const mensajeDiv = document.getElementById('mensaje');
+  if (mensajeDiv) mensajeDiv.textContent = texto;
+  console.log(texto); // también en consola
+}
+
+window.mostrarTendencia = function () {
+  const chart = echarts.getInstanceByDom(document.getElementById("chart-container"));
+  if (!chart) {
+    console.error("Tendencia: no hay gráfico activo.");
     return;
   }
 
-  const [xData, yData] = dataCoord;
+  // Resetear estados
+  tendenciaActiva = false;
+  tendenciaClicks = 0;
+  puntosTendencia = [];
 
-  if (!primerPunto) {
-    // Primer clic → guardar punto inicial
-    primerPunto = { xData, yData };
-    console.log("Primer punto:", yData);
-  } else {
-    // Segundo clic → calcular y dibujar línea
-    const segundoPunto = { xData, yData };
-    const cambioPct = ((segundoPunto.yData - primerPunto.yData) / primerPunto.yData) * 100;
+  // Quitar eventos previos
+  chart.off('click');
 
-    // Convertir a píxeles
-    const p1 = chart.convertToPixel({ xAxisIndex: 0, yAxisIndex: 0 }, [primerPunto.xData, primerPunto.yData]);
-    const p2 = chart.convertToPixel({ xAxisIndex: 0, yAxisIndex: 0 }, [segundoPunto.xData, segundoPunto.yData]);
+  // Conectar botón
+  document.getElementById('btn-tendencia').onclick = () => {
+    if (tendenciaActiva) {
+      // Si estaba activa → limpiar todas las líneas de tendencia
+      const option = chart.getOption();
+      const series = option.series.filter(s => s.type === 'candlestick'); // solo velas
+      chart.setOption({ series }, { replaceMerge: ['series'] });
+      tendenciaActiva = false;
+      tendenciaClicks = 0;
+      puntosTendencia = [];
+      mostrarMensaje("Tendencia desactivada. Todas las líneas borradas.");
+    } else {
+      // Activar tendencia
+      tendenciaActiva = true;
+      tendenciaClicks = 0;
+      puntosTendencia = [];
+      mostrarMensaje("Tendencia activada. Haz clic en dos velas para dibujar la línea.");
+    }
+  };
 
-    const linea = {
-      id: lineaId,
-      type: 'line',
-      shape: { x1: p1[0], y1: p1[1], x2: p2[0], y2: p2[1] },
-      style: { stroke: 'yellow', lineWidth: 2 },
-      textContent: {
-        style: {
-          text: cambioPct.toFixed(2) + '%',
-          fill: '#fff',
-          font: '12px Arial'
+  // Registrar evento de clic
+  chart.on('click', function (params) {
+    if (!tendenciaActiva) return;
+    if (params.seriesType !== 'candlestick') return;
+
+    const fecha = params.name;
+    const valores = params.data;
+    const precioCierre = valores[1];
+
+    puntosTendencia.push({ fecha, precio: precioCierre });
+    tendenciaClicks++;
+
+    mostrarMensaje(`Click ${tendenciaClicks}: ${fecha} → USD ${precioCierre.toFixed(2)}`);
+
+    // Cada dos clics → dibujar línea de tendencia
+    if (tendenciaClicks % 2 === 0) {
+      const p1 = puntosTendencia[tendenciaClicks - 2];
+      const p2 = puntosTendencia[tendenciaClicks - 1];
+
+      const colorLinea = p1.precio < p2.precio ? '#00ff00' : '#ff0000'; // verde o rojo
+      const grosor = 3; // 👈 aquí puedes modificar el grosor
+
+      const option = chart.getOption();
+      const nuevasSeries = option.series.slice();
+
+      nuevasSeries.push({
+        type: 'line',
+        data: [[p1.fecha, p1.precio], [p2.fecha, p2.precio]],
+        lineStyle: { color: colorLinea, width: grosor },
+        symbol: 'circle',
+        symbolSize: 8,
+        itemStyle: { color: colorLinea },
+        yAxisIndex: 0,
+        label: {
+          show: true,
+          position: 'middle',
+          formatter: "Tendencia",
+          color: '#fff',
+          fontWeight: 'bold',
+          fontSize: 20
         }
-      },
-      textConfig: { position: 'middle' },
-      silent: true
-    };
+      });
 
-    chart.setOption({ graphic: [linea] }, { replaceMerge: ['graphic'] });
-
-    console.log(`Cambio: ${cambioPct.toFixed(2)}%`);
-    primerPunto = null; // reset para nueva medición
-  }
-}
-
-// Botón que activa/desactiva la regla
-document.getElementById('btn-regla')?.addEventListener('click', () => {
-  window.activarReglaLinea();
-});
-
-
+      chart.setOption({ series: nuevasSeries }, { replaceMerge: ['series'] });
+      mostrarMensaje(`Se dibujó línea de tendencia entre ${p1.fecha} y ${p2.fecha}`);
+      console.log("Línea de tendencia dibujada:", p1, p2);
+    }
+  });
+};
+document.getElementById("btn-tendencia").addEventListener("click", () => window.mostrarTendencia());

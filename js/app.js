@@ -1,255 +1,118 @@
 let chart;
 
-// Inicializar gráfico ECharts
-function initChart() {
-  const container = document.getElementById('chart-container');
-  if (chart) {
-    chart.dispose(); // destruir gráfico anterior COMPLETAMENTE
-  }
-  chart = echarts.init(container);
-}
-
-// Parsear CSV a formato ECharts
+// Cargar CSV genérico
 async function cargarCSV(ruta) {
   const resp = await fetch(ruta);
   const texto = await resp.text();
-  const filas = texto.trim().split('\n').slice(1);
-
-  const fechas = [];
-  const valores = [];
-
-  filas.forEach(linea => {
-    const [date, open, high, low, close] = linea.split(',');
-    fechas.push(date);
-    valores.push([parseFloat(open), parseFloat(close), parseFloat(low), parseFloat(high)]);
-    // ECharts espera [open, close, low, high]
-  });
-
-  // Guardar datos globales para otras funciones
-  window.currentData = filas.map(linea => {
-    const [date, open, high, low, close] = linea.split(',');
-    return {
-      Date: date,
-      Open: parseFloat(open),
-      High: parseFloat(high),
-      Low: parseFloat(low),
-      Close: parseFloat(close)
-    };
-  });
-
-  return { fechas, valores };
+  return texto.trim().split('\n').slice(1).map(linea => linea.split(','));
 }
 
-// Renderizar velas japonesas
+// Renderizar velas japonesas en USD
 async function renderCandles(ruta, label) {
-  initChart(); // siempre limpia antes de crear
-  const { fechas, valores } = await cargarCSV(ruta);
+  // 1) Cargar precios del activo en Bs
+  const precios = await cargarCSV(ruta);
 
-  const option = {
-    title: { text: label, left: 'center', textStyle: { color: '#fff' } },
-    backgroundColor: '#000',
-    tooltip: { trigger: 'axis' },
-    xAxis: {
-      type: 'category',
-      data: fechas,
-      axisLine: { lineStyle: { color: '#fff' } },
-    },
-    yAxis: {
-      scale: true,
-      axisLine: { lineStyle: { color: '#fff' } },
+  // 2) Cargar tasas de cambio desde bolivar.csv
+  const tasas = await cargarCSV('archivos/bolivar.csv');
+  const mapaTasas = {};
+  tasas.forEach(([date, open, high, low, close]) => {
+    mapaTasas[date] = parseFloat(close); // usamos Precio_Cierre como tasa
+  });
+
+  // 3) Convertir cada precio usando la tasa de ese día
+  const valores = [];
+  window.currentData = []; // guardar datos para indicadores
+
+  precios.forEach(([date, open, high, low, close]) => {
+    const tasa = mapaTasas[date];
+    if (!tasa) return;
+
+    const fecha = new Date(date).getTime(); // Highcharts usa timestamp en ms
+    const o = parseFloat(open) / tasa;
+    const h = parseFloat(high) / tasa;
+    const l = parseFloat(low) / tasa;
+    const c = parseFloat(close) / tasa;
+
+    valores.push([fecha, o, h, l, c]);
+
+    window.currentData.push({ Date: date, Open: o, High: h, Low: l, Close: c });
+  });
+
+  // 4) Crear gráfico con Highcharts
+  chart = Highcharts.stockChart('chart-container', {
+    chart: { backgroundColor: '#000' },
+    title: { text: label + ' (USD)', style: { color: '#fff' } },
+    rangeSelector: { selected: 1 },
+    xAxis: { labels: { style: { color: '#fff' } } },
+    yAxis: { labels: { style: { color: '#fff' } }, gridLineColor: '#333' },
+    tooltip: {
+      split: false,
+      formatter: function () {
+        const point = this.point; // ✅ usar this.point en vez de this.points[0]
+        return Highcharts.dateFormat('%Y-%m-%d', point.x) +
+          '<br/>Open: ' + point.open.toFixed(2) +
+          '<br/>High: ' + point.high.toFixed(2) +
+          '<br/>Low: ' + point.low.toFixed(2) +
+          '<br/>Close: ' + point.close.toFixed(2);
+      }
     },
     series: [{
       type: 'candlestick',
+      name: label,
       data: valores,
-      itemStyle: {
-        color: '#00ff00',       // subida
-        color0: '#ff0000',      // bajada
-        borderColor: '#00ff00',
-        borderColor0: '#ff0000'
-      }
+      color: '#ff0000',      // velas bajistas
+      upColor: '#00ff00',    // velas alcistas
+      lineColor: '#ff0000',
+      upLineColor: '#00ff00'
     }]
-  };
-
-  chart.setOption(option);
+  });
 }
 
-// Función: Líneas de tendencia automáticas
-window.trazarLineasTendencia = function () {
-  if (!chart || !window.currentData || window.currentData.length < 20) {
-    console.error("No existe el gráfico o no hay suficientes datos cargados");
-    return;
-  }
+// Función para dibujar un cuadrado
+function activarDibujo() {
+  if (!chart) return;
 
-  console.log("Datos cargados:", window.currentData.length);
+  chart.addAnnotation({
+    draggable: 'xy', // permite mover/redimensionar con el mouse
+    shapes: [{
+      type: 'rect',
+      point: { xAxis: 0, yAxis: 0, x: Date.UTC(2023,10,21), y: 100 },
+      width: 24 * 3600 * 1000 * 2, // ancho en milisegundos (2 días)
+      height: 5,                   // altura en unidades del eje Y
+      fill: 'rgba(0,255,0,0.3)',
+      stroke: 'green'
+    }]
+  });
+}
 
-  const closes = window.currentData.map(d => d.Close);
-
-  let minimos = [], maximos = [];
-  for (let i = 1; i < closes.length - 1; i++) {
-    if (closes[i] < closes[i - 1] && closes[i] < closes[i + 1]) {
-      minimos.push({ index: i, value: closes[i] });
-      console.log("Mínimo detectado:", window.currentData[i].Date, closes[i]);
-    }
-    if (closes[i] > closes[i - 1] && closes[i] > closes[i + 1]) {
-      maximos.push({ index: i, value: closes[i] });
-      console.log("Máximo detectado:", window.currentData[i].Date, closes[i]);
-    }
-  }
-
-  // Línea alcista (mínimos)
-  if (minimos.length >= 2) {
-    const p1 = minimos[minimos.length - 2];
-    const p2 = minimos[minimos.length - 1];
-    console.log("Trazando línea alcista entre:", window.currentData[p1.index].Date, p1.value, "y", window.currentData[p2.index].Date, p2.value);
-
-    chart.setOption({
-      series: [
-        ...chart.getOption().series,
-        {
-          name: "Tendencia Alcista",
-          type: "line",
-          data: [
-            [window.currentData[p1.index].Date, p1.value],
-            [window.currentData[p2.index].Date, p2.value]
-          ],
-          lineStyle: { color: "green", width: 2, type: "dashed" },
-          showSymbol: false,
-          yAxisIndex: 0
-        }
-      ]
-    });
-  } else {
-    console.warn("No se encontraron suficientes mínimos para trazar línea alcista");
-  }
-
-  // Línea bajista (máximos)
-  if (maximos.length >= 2) {
-    const p1 = maximos[maximos.length - 2];
-    const p2 = maximos[maximos.length - 1];
-    console.log("Trazando línea bajista entre:", window.currentData[p1.index].Date, p1.value, "y", window.currentData[p2.index].Date, p2.value);
-
-    chart.setOption({
-      series: [
-        ...chart.getOption().series,
-        {
-          name: "Tendencia Bajista",
-          type: "line",
-          data: [
-            [window.currentData[p1.index].Date, p1.value],
-            [window.currentData[p2.index].Date, p2.value]
-          ],
-          lineStyle: { color: "red", width: 2, type: "dashed" },
-          showSymbol: false,
-          yAxisIndex: 0
-        }
-      ]
-    });
-  } else {
-    console.warn("No se encontraron suficientes máximos para trazar línea bajista");
-  }
-};
-
-// Eventos
+// Inicializar con un activo por defecto y botones
 document.addEventListener('DOMContentLoaded', () => {
-  // Render por defecto
   renderCandles('archivos/bdv.csv', 'Banco de Venezuela');
 
-  // Botones de panel derecho
   document.querySelectorAll('.right-panel button').forEach(btn => {
     btn.addEventListener('click', () => {
       const ruta = btn.getAttribute('data-path');
       const label = btn.getAttribute('data-label');
+      if (!ruta) return;
       renderCandles(ruta, label);
     });
   });
-
-  // Botón de tendencia automática en tu suite
-  const btnTendencia = document.getElementById("btn-tendencia");
-  if (btnTendencia) {
-    btnTendencia.addEventListener("click", () => window.trazarLineasTendencia());
-  }
 });
 
-window.dibujosActivos = [];
+// 👉 Función para dibujar una línea
+function activarLinea() {
+  if (!chart) return;
 
-
-window.mostrarZonasPivote = function () {
-  console.log(">>> mostrarZonasPivote llamada");
-
-  const myChart = echarts.getInstanceByDom(document.getElementById("chart-container"));
-  const currentData = window.currentData || [];
-
-  if (!myChart || currentData.length < 3) {
-    console.error("No hay suficientes datos para calcular pivotes");
-    return;
-  }
-
-  // --- 1. Configuración de tolerancia manual ---
-  const tolerancia = 0.5; // ajusta este valor según quieras agrupar niveles
-
-  // --- 2. Contar repeticiones de precios de cierre (redondeados) ---
-  const conteo = {};
-  currentData.forEach(d => {
-    const nivel = parseFloat(d.Close.toFixed(2));
-    conteo[nivel] = (conteo[nivel] || 0) + 1;
+  chart.addAnnotation({
+    draggable: 'xy', // permite mover y redimensionar con el mouse
+    shapes: [{
+      type: 'path',   // usamos "path" para una línea
+      points: [
+        { xAxis: 0, yAxis: 0, x: Date.UTC(2023,10,21), y: 100 },
+        { xAxis: 0, yAxis: 0, x: Date.UTC(2023,10,23), y: 110 }
+      ],
+      stroke: 'yellow',
+      strokeWidth: 2
+    }]
   });
-  console.log("Conteo de niveles:", conteo);
-
-  // --- 3. Filtrar niveles con al menos 4 repeticiones ---
-  let pivotes = Object.keys(conteo)
-    .filter(nivel => conteo[nivel] >= 3)
-    .map(Number);
-
-  console.log("Niveles detectados como pivotes (sin agrupar):", pivotes);
-
-  if (pivotes.length === 0) {
-    console.warn("No se detectaron niveles repetidos suficientes");
-    return;
-  }
-
-  // --- 4. Agrupar niveles por tolerancia ---
-  pivotes.sort((a, b) => a - b);
-  let zonas = [];
-  let grupo = [pivotes[0]];
-
-  for (let i = 1; i < pivotes.length; i++) {
-    if (Math.abs(pivotes[i] - grupo[grupo.length - 1]) <= tolerancia) {
-      grupo.push(pivotes[i]);
-    } else {
-      zonas.push({ min: Math.min(...grupo), max: Math.max(...grupo) });
-      grupo = [pivotes[i]];
-    }
-  }
-  zonas.push({ min: Math.min(...grupo), max: Math.max(...grupo) });
-
-  console.log("Zonas agrupadas:", zonas);
-
-  // --- 5. Dibujar rectángulos horizontales ---
-  const graphics = zonas.map(z => {
-    const topPixel = myChart.convertToPixel({ yAxisIndex: 0 }, z.max);
-    const bottomPixel = myChart.convertToPixel({ yAxisIndex: 0 }, z.min);
-    const width = myChart.getWidth();
-
-    return {
-      type: 'rect',
-      shape: {
-        x: 0,
-        y: topPixel,
-        width: width,
-        height: bottomPixel - topPixel
-      },
-      style: {
-        fill: 'rgba(255,170,0,0.2)',
-        stroke: '#ffaa00'
-      }
-    };
-  });
-
-  myChart.setOption({ graphic: graphics });
-  console.log("Se añadieron zonas de pivote al gráfico");
-};
-
-// Botón
-document.getElementById("btn-pivotes").addEventListener("click", () => {
-  window.mostrarZonasPivote();
-});
+}
