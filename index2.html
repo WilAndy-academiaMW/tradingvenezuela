@@ -20,9 +20,10 @@
       <h1>trading Venezuela</h1>
     </div>
     <div class="menu">
-     <a href="index.html">💵 Precios en Bolívares</a>
-     <a href="index2.html">💲 Precios en Dólares</a>
+      <a href="index.html">💵 Precios en Bolívares</a>
+     <a href="index2.html">💲 bolsa de valores de caracas</a>
      <a href="index3.html">📊 analisis de datos</a>
+      <a href="index4.html">📊 criptomonedas</a>
 <!--   <a href="index4.html">📂 Portafolio</a> -->  
      </div>
   </nav>
@@ -70,6 +71,13 @@
 
 
     <div class="panel center-panel" style="display: flex; flex-direction: column;">
+       <div style="display: flex; width: 100%;height: 50px;justify-content: end;">
+        <button id="1m">1M</button>
+        <button id="3m">3M</button>
+        <button  id="6m">6M</button>
+        <button  id="1a">1A</button>
+        <button  id="2a">2A</button>
+      </div>
      
       <div id="chart-container" style="width:1000px;height:600px;"></div>
        <div id="mensaje" style="width: 100%; height: 100px; color: white;"></div>
@@ -85,20 +93,20 @@
           </button>
         </li>
         <li>
-          <button data-path="archivos/ron.csv" data-label="Ron santa teresa">
+          <button data-path="archivos/ron2.csv" data-label="Ron santa teresa">
              <img src="img/imgA/santaTeresa.png" alt="banco de Venezuela" style="width: 20px; height: 20px;">
             Ron santa teresa
           </button>
         </li>
              <!--  BDVC--> 
         <li>
-          <button data-path="archivos/bdvc.csv" data-label="BDVC">
+          <button data-path="archivos/bdcv.csv" data-label="BDVC">
              <img src="img/imgA/bdvc.png" alt="banco de Venezuela" style="width: 20px; height: 20px;">
             BDVC
           </button>
         </li>
          <li>
-          <button data-path="archivos/manpa.csv" data-label="Manufacturas de Papel">
+          <button data-path="archivos\Manufacturas de Papel CA.csv" data-label="Manufacturas de Papel">
              <img src="img/imgA/Manpa.png" alt="Manufacturas de Papel" style="width: 20px; height: 20px;">
             Manufacturas de Papel
           </button>
@@ -119,6 +127,12 @@
           <button data-path="archivos/Efe.csv" data-label="helados efe">
              <img src="img/imgA/efe.png" alt="Banco Mercantil" style="width: 20px; height: 20px;">
             helados efe
+          </button>
+        </li>
+         <li>
+          <button data-path="archivos\Dominguez & Ci.csv" data-label="Domínguez & Cia. SA">
+             <img src="img/imgA/DOM.png" alt="Domínguez & Cia. SA" style="width: 20px; height: 20px;">
+           Domínguez & Cia. SA
           </button>
         </li>
          <!--protinal--> 
@@ -231,6 +245,12 @@
           <button data-path="archivos/cemento.csv" data-label="FAB.N.CEMENTOS">
              <img src="img/imgA/cemento.png" alt="F.PETROLIA B" style="width: 20px; height: 20px;">
                   FAB.N.CEMENTOS
+          </button>
+        </li>
+         <li>
+          <button data-path="archivos/corimon.csv" data-label="corimon">
+             <img src="img/imgA/corimon.png" alt="corimon" style="width: 20px; height: 20px;">
+                  Corimon
           </button>
         </li>
       

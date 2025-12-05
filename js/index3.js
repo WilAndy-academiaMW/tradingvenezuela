@@ -145,50 +145,80 @@ async function inicializarApp() {
     tasa_usd_bcv = parseFloat(ultima_tasa_usd_fila[1]);
 
     // --- Mostrar por defecto BDV ---
-    mostrarPrecios(6);                 // Precio BDV
-    graficarVolumen(6, "Volumen BDV"); // Volumen BDV
-    graficarEfectivoBs(6);             // Efectivo BDV en Bs
-    graficarEfectivoUsd(6);            // Efectivo BDV en USD
+    mostrarPrecios(1);                 // Precio BDV
+    graficarVolumen(1, "Volumen BDV"); // Volumen BDV
+    graficarEfectivoBs(1);             // Efectivo BDV en Bs
+    graficarEfectivoUsd(1);            // Efectivo BDV en USD
 
     // --- Botones de acciones ---
-    document.getElementById("btn-bdv").addEventListener('click', () => {
-        mostrarPrecios(6);
-        graficarVolumen(6, "Volumen BDV");
-        graficarEfectivoBs(6);
-        graficarEfectivoUsd(6);
-    });
 
+    document.getElementById("btn-caribe").addEventListener('click', () => {
+        mostrarPrecios(1);
+        graficarVolumen(1, "Volumen caribe");
+        graficarEfectivoBs(1);
+        graficarEfectivoUsd(1);
+    });
+    document.getElementById("btn-arca").addEventListener('click', () => {
+        mostrarPrecios(2);
+        graficarVolumen(2, "Volumen arca");
+        graficarEfectivoBs(2);
+        graficarEfectivoUsd(2);
+    });
+    document.getElementById("btn-bnc").addEventListener('click', () => {
+        mostrarPrecios(3);
+        graficarVolumen(3, "Volumen BNC");
+        graficarEfectivoBs(3);
+        graficarEfectivoUsd(3);
+    });
+     
+    document.getElementById("btn-provincial").addEventListener('click', () => {
+        mostrarPrecios(4);
+        graficarVolumen(4, "Volumen Provincial");
+        graficarEfectivoBs(4);
+        graficarEfectivoUsd(4);
+    });
     document.getElementById("btn-bdvc").addEventListener('click', () => {
         mostrarPrecios(5);
         graficarVolumen(5, "Volumen BNC");
         graficarEfectivoBs(5);
         graficarEfectivoUsd(5);
     });
-
-    document.getElementById("btn-bnc").addEventListener('click', () => {
-        mostrarPrecios(3);
-        graficarVolumen(3, "Volumen Provincial");
-        graficarEfectivoBs(3);
-        graficarEfectivoUsd(3);
+    document.getElementById("btn-bdv").addEventListener('click', () => {
+        mostrarPrecios(6);
+        graficarVolumen(6, "Volumen BDV");
+        graficarEfectivoBs(6);
+        graficarEfectivoUsd(6);
+    });
+    document.getElementById("btn-C.CAPITAL B").addEventListener('click', () => {
+        mostrarPrecios(7);
+        graficarVolumen(7, "Volumen C.CAPITAL B");
+        graficarEfectivoBs(7);
+        graficarEfectivoUsd(7);
+    });
+    document.getElementById("btn-ceramica").addEventListener('click', () => {
+        mostrarPrecios(8);
+        graficarVolumen(8, "Volumen ceramica carabobo");
+        graficarEfectivoBs(8);
+        graficarEfectivoUsd(8);
+    });
+      document.getElementById("btn-grupoQuimico").addEventListener('click', () => {
+        mostrarPrecios(8);
+        graficarVolumen(8, "Volumen grupo zuleano");
+        graficarEfectivoBs(8);
+        graficarEfectivoUsd(8);
     });
 
-      document.getElementById("btn-provincial").addEventListener('click', () => {
-        mostrarPrecios(4);
-        graficarVolumen(4, "Volumen Provincial");
-        graficarEfectivoBs(4);
-        graficarEfectivoUsd(4);
-    });
       document.getElementById("btn-envase").addEventListener('click', () => {
-        mostrarPrecios(13);
-        graficarVolumen(13, "Envases Venezolano");
-        graficarEfectivoBs(13);
-        graficarEfectivoUsd(13);
-    });
-      document.getElementById("btn-efe").addEventListener('click', () => {
         mostrarPrecios(12);
-        graficarVolumen(12, "Volumen efe");
+        graficarVolumen(12, "Envases Venezolano");
         graficarEfectivoBs(12);
         graficarEfectivoUsd(12);
+    });
+      document.getElementById("btn-efe").addEventListener('click', () => {
+        mostrarPrecios(11);
+        graficarVolumen(11, "Volumen efe");
+        graficarEfectivoBs(11);
+        graficarEfectivoUsd(11);
     });
        document.getElementById("btn-ron").addEventListener('click', () => {
         mostrarPrecios(28);
@@ -196,72 +226,57 @@ async function inicializarApp() {
         graficarEfectivoBs(28);
         graficarEfectivoUsd(28);
     });
-     document.getElementById("btn-caribe").addEventListener('click', () => {
-        mostrarPrecios(1);
-        graficarVolumen(1, "Volumen caribe");
-        graficarEfectivoBs(1);
-        graficarEfectivoUsd(1);
-    });
+  
      document.getElementById("btn-invanca").addEventListener('click', () => {
         mostrarPrecios(18);
-        graficarVolumen(1, "Volumen invanca");
-        graficarEfectivoBs(1);
-        graficarEfectivoUsd(1);
+        graficarVolumen(18, "Volumen invanca");
+        graficarEfectivoBs(18);
+        graficarEfectivoUsd(18);
     });
       document.getElementById("btn-mercantil").addEventListener('click', () => {
-        mostrarPrecios(23);
-        graficarVolumen(23, "Volumen mercantil");
-        graficarEfectivoBs(23);
-        graficarEfectivoUsd(23);
+        mostrarPrecios(22);
+        graficarVolumen(22, "Volumen mercantil");
+        graficarEfectivoBs(22);
+        graficarEfectivoUsd(22);
     });
      document.getElementById("btn-manpa").addEventListener('click', () => {
+        mostrarPrecios(19);
+        graficarVolumen(19, "Volumen Manpa");
+        graficarEfectivoBs(19);
+        graficarEfectivoUsd(19);
+    });
+      
+      document.getElementById("btn-protinal").addEventListener('click', () => {
+        mostrarPrecios(26);
+        graficarVolumen(26, "Volumen protinal");
+        graficarEfectivoBs(26);
+        graficarEfectivoUsd(26);
+    });
+     document.getElementById("btn-proagro").addEventListener('click', () => {
+        mostrarPrecios(24);
+        graficarVolumen(24, "Volumen proagro");
+        graficarEfectivoBs(24);
+        graficarEfectivoUsd(24);
+    });
+     document.getElementById("btn-telares").addEventListener('click', () => {
+        mostrarPrecios(31);
+        graficarVolumen(31, "Volumen telares palos grandes");
+        graficarEfectivoBs(31);
+        graficarEfectivoUsd(31);
+    });
+       document.getElementById("btn-montesco").addEventListener('click', () => {
         mostrarPrecios(20);
-        graficarVolumen(20, "Volumen Manpa");
+        graficarVolumen(20, "Volumen telares palos grandes");
         graficarEfectivoBs(20);
         graficarEfectivoUsd(20);
     });
-      document.getElementById("btn-ceramica").addEventListener('click', () => {
-        mostrarPrecios(8);
-        graficarVolumen(8, "Volumen ceramica carabobo");
-        graficarEfectivoBs(8);
-        graficarEfectivoUsd(8);
-    });
-      document.getElementById("btn-protinal").addEventListener('click', () => {
-        mostrarPrecios(27);
-        graficarVolumen(27, "Volumen protinal");
-        graficarEfectivoBs(27);
-        graficarEfectivoUsd(27);
-    });
-     document.getElementById("btn-proagro").addEventListener('click', () => {
-        mostrarPrecios(25);
-        graficarVolumen(25, "Volumen proagro");
-        graficarEfectivoBs(25);
-        graficarEfectivoUsd(25);
-    });
-     document.getElementById("btn-telares").addEventListener('click', () => {
-        mostrarPrecios(32);
-        graficarVolumen(25, "Volumen telares palos grandes");
-        graficarEfectivoBs(25);
-        graficarEfectivoUsd(25);
-    });
-       document.getElementById("btn-montesco").addEventListener('click', () => {
-        mostrarPrecios(21);
-        graficarVolumen(21, "Volumen telares palos grandes");
-        graficarEfectivoBs(21);
-        graficarEfectivoUsd(21);
-    });
       document.getElementById("btn-grupoZ").addEventListener('click', () => {
-        mostrarPrecios(16);
-        graficarVolumen(16, "Volumen grupo zuleano");
-        graficarEfectivoBs(16);
-        graficarEfectivoUsd(16);
+        mostrarPrecios(15);
+        graficarVolumen(15, "Volumen grupo zuleano");
+        graficarEfectivoBs(15);
+        graficarEfectivoUsd(15);
     });
-     document.getElementById("btn-grupoQuimico").addEventListener('click', () => {
-        mostrarPrecios(9);
-        graficarVolumen(9, "Volumen grupo zuleano");
-        graficarEfectivoBs(9);
-        graficarEfectivoUsd(9);
-    });
+   
 }
 
 

@@ -1,4 +1,5 @@
 let chart;
+let currentSeries = { fechas: [], valores: [] }; // última serie renderizada
 
 // Inicializar gráfico
 function initChart() {
@@ -14,93 +15,124 @@ async function cargarCSV(ruta) {
   return texto.trim().split('\n').slice(1).map(linea => linea.split(','));
 }
 
-// Renderizar velas japonesas en USD
+// Renderizar velas convertidas a USD
 async function renderCandles(ruta, label) {
   initChart();
 
-  // 1) Cargar precios del activo en Bs
   const precios = await cargarCSV(ruta);
-
-  // 2) Cargar tasas de cambio desde bolivar.csv
   const tasas = await cargarCSV('archivos/bolivar.csv');
+
   const mapaTasas = {};
   tasas.forEach(([date, open, high, low, close]) => {
-    mapaTasas[date] = parseFloat(close); // usamos Precio_Cierre como tasa
+    mapaTasas[date] = parseFloat(close);
   });
 
-  // 3) Convertir cada precio usando la tasa de ese día
   const fechas = [];
   const valores = [];
-  window.currentData = []; // guardar datos para indicadores
+  window.currentData = [];
 
   precios.forEach(([date, open, high, low, close]) => {
     const tasa = mapaTasas[date];
     if (!tasa) return;
 
-    fechas.push(date);
-    valores.push([
-      parseFloat(open) / tasa,
-      parseFloat(close) / tasa,
-      parseFloat(low) / tasa,
-      parseFloat(high) / tasa
-    ]);
+    const o = parseFloat(open) / tasa;
+    const c = parseFloat(close) / tasa;
+    const l = parseFloat(low) / tasa;
+    const h = parseFloat(high) / tasa;
 
-    window.currentData.push({
-      Date: date,
-      Open: parseFloat(open) / tasa,
-      High: parseFloat(high) / tasa,
-      Low: parseFloat(low) / tasa,
-      Close: parseFloat(close) / tasa
-    });
+    fechas.push(date);
+    valores.push([o, c, l, h]);
+
+    window.currentData.push({ Date: date, Open: o, High: h, Low: l, Close: c });
   });
 
-const option = {
-  title: { text: label + " (USD)", left: 'center', textStyle: { color: '#fff' } },
-  backgroundColor: '#000',
-  tooltip: {
-    trigger: 'axis',
-    formatter: function (params) {
-      const data = params[0].data;
-      const fecha = params[0].axisValue;
-      const cierre = data[1]; // posición del Close
-      return fecha + '<br/>USD: ' + cierre.toFixed(2);
-    }
-  },
-  xAxis: {
-    type: 'category',
-    data: fechas,
-    axisLine: { lineStyle: { color: '#fff' } },
-  },
-  yAxis: {
-    scale: true,
-    axisLine: { lineStyle: { color: '#fff' } },
-  },
-  series: [{
-    type: 'candlestick',
-    data: valores,
-    itemStyle: {
-      color: '#00ff00',
-      color0: '#ff0000',
-      borderColor: '#00ff00',
-      borderColor0: '#ff0000'
-    }
-  }],
-  dataZoom: [
-    { type: 'inside', xAxisIndex: [0], start: 0, end: 100 },
-    { type: 'slider', xAxisIndex: [0], start: 0, end: 100 }
-  ]
-};
+  currentSeries = { fechas, valores }; // guardar para filtros
 
-
-
+  const option = {
+    title: { text: label + " (USD)", left: 'center', textStyle: { color: '#fff' } },
+    backgroundColor: '#000',
+    tooltip: {
+      trigger: 'axis',
+      formatter: function (params) {
+        const data = params[0].data;
+        const fecha = params[0].axisValue;
+        const cierre = data[1];
+        return fecha + '<br/>USD: ' + cierre.toFixed(2);
+      }
+    },
+    xAxis: { type: 'category', data: fechas, axisLine: { lineStyle: { color: '#fff' } } },
+    yAxis: { scale: true, axisLine: { lineStyle: { color: '#fff' } } },
+    series: [{
+      type: 'candlestick',
+      data: valores,
+      itemStyle: {
+        color: '#00ff00',
+        color0: '#ff0000',
+        borderColor: '#00ff00',
+        borderColor0: '#ff0000'
+      }
+    }],
+    dataZoom: [
+      { type: 'inside', xAxisIndex: [0], start: 0, end: 100 },
+      { type: 'slider', xAxisIndex: [0], start: 0, end: 100 }
+    ]
+  };
 
   chart.setOption(option);
 }
 
-// Eventos de los botones de activos
+// Actualizar gráfico con datos filtrados
+function actualizarGrafico(fechasFiltradas, valoresFiltrados) {
+  if (!chart) return;
+  chart.setOption({
+    xAxis: { data: fechasFiltradas },
+    series: [{ data: valoresFiltrados }]
+  }, { notMerge: true });
+}
+
+// Mensajería simple
+function mostrarMensaje(msg) {
+  const el = document.getElementById('status');
+  if (el) el.textContent = msg;
+  console.log(msg);
+}
+
+// Filtrar por rango temporal (pasando datos)
+function filtrarRango(meses, fechas, valores) {
+  if (!Array.isArray(fechas) || !Array.isArray(valores) || fechas.length === 0 || valores.length === 0) {
+    mostrarMensaje('No hay datos para filtrar.');
+    return;
+  }
+
+  const ahora = new Date(fechas[fechas.length - 1]); // última fecha
+  const limite = new Date(ahora);
+  limite.setMonth(limite.getMonth() - meses);
+
+  const fechasFiltradas = [];
+  const valoresFiltrados = [];
+
+  fechas.forEach((f, i) => {
+    const fecha = new Date(f);
+    if (!isNaN(fecha) && fecha >= limite) {
+      fechasFiltradas.push(f);
+      valoresFiltrados.push(valores[i]);
+    }
+  });
+
+  if (fechasFiltradas.length === 0) {
+    mostrarMensaje(`Sin velas en los últimos ${meses} meses.`);
+    return;
+  }
+
+  actualizarGrafico(fechasFiltradas, valoresFiltrados);
+  mostrarMensaje(`Mostrando últimos ${meses} meses (${fechasFiltradas.length} velas).`);
+}
+
+// Eventos de arranque y botones
 document.addEventListener('DOMContentLoaded', () => {
   renderCandles('archivos/bdv.csv', 'Banco de Venezuela');
 
+  // Botones de activos
   document.querySelectorAll('.right-panel button').forEach(btn => {
     btn.addEventListener('click', () => {
       const ruta = btn.getAttribute('data-path');
@@ -109,7 +141,34 @@ document.addEventListener('DOMContentLoaded', () => {
       renderCandles(ruta, label);
     });
   });
+
+  // Botón de filtro por rango (ejemplo: id="btn-6m")
+  const btn6m = document.getElementById('btn-6m');
+  if (btn6m) {
+    btn6m.onclick = () => filtrarRango(6, currentSeries.fechas, currentSeries.valores);
+  }
+
+  // Otro ejemplo: 12 meses (id="btn-12m")
+  const btn12m = document.getElementById('btn-12m');
+  if (btn12m) {
+    btn12m.onclick = () => filtrarRango(12, currentSeries.fechas, currentSeries.valores);
+  }
 });
+
+// Filtrar por rango temporal
+
+
+
+
+// -------------------- EVENTOS --------------------
+
+// Botones de rango temporal
+document.getElementById("1m").onclick = () => filtrarRango(1);
+document.getElementById("3m").onclick = () => filtrarRango(3);
+document.getElementById("6m").onclick = () => filtrarRango(6);
+document.getElementById("1a").onclick = () => filtrarRango(12);
+document.getElementById("2a").onclick = () => filtrarRango(24);
+
 
 // ==========================================================
 // Exclusividad de indicadores

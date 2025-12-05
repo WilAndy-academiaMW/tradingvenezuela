@@ -40,7 +40,8 @@ ACTIVOS_A_DESCARGAR = {
     "VES=X":"bolivar.csv",
     "ENV.CR":"envases.csv",
     "PTN.CR":"protinal.csv",
-    "FNC.CR":"cemento.cvs",
+    "FNC.CR":"cemento.csv",
+    "CRM-A.CR":"corimon.cvs",
 }
 
 

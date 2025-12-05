@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 # --- Configuración ---
-TICKER = "BNV.CR" 
+TICKER = "PTN.CR" 
 
 # Usd/Ves:VES=X.. bdvc:BVCC.CR.. ceramica:CCR.CR..provincial:BPV.CR..
 #proagro:PGR.CR..Banco Nacional de Credito:BNC.CR.. "Montesco:MTC-B.CR".. ..
@@ -12,12 +12,12 @@ TICKER = "BNV.CR"
 #..#..#.
 
 
-NOMBRE_ARCHIVO = "archivos/bnc.csv" 
+NOMBRE_ARCHIVO = "archivos/protinal.csv" 
 
 
 # Calcular la fecha de inicio: 3 años antes de hoy (ajuste para días bisiestos)
 # Se usa 3 * 365 + 1 = 1096 días para cubrir cualquier día bisiesto potencial.
-TRES_ANOS_ATRAS = datetime.today() - timedelta(days=2 * 365 + 1)
+TRES_ANOS_ATRAS = datetime.today() - timedelta(days=3 * 365 + 1)
 FECHA_INICIO = TRES_ANOS_ATRAS.strftime('%Y-%m-%d')
 FECHA_FIN = datetime.today().strftime('%Y-%m-%d') # Fecha de hoy
 

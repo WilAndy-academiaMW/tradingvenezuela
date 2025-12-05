@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portafolio de Acciones (Brutal)</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carga de ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <!-- Configuración de Tailwind (Tema Oscuro por defecto) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-dark': '#1e293b', // slate-800
+                        'secondary-dark': '#334155', // slate-700
+                        'accent': '#3b82f6', // blue-500
+                        'profit': '#10b981', // emerald-500
+                        'loss': '#ef4444', // red-500
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Estilo para que el contenedor principal ocupe toda la altura de la pantalla en móvil */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* slate-900 */
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen p-2">
+
+    <!-- Contenedor Principal Adaptable (Mobile First) -->
+    <div class="max-w-4xl mx-auto space-y-6">
+
+        <!-- Título -->
+        <header class="text-center pt-4 pb-2 border-b border-secondary-dark">
+            <h1 class="text-3xl font-extrabold text-accent">PORTAFOLIO BRUTAL</h1>
+            <p id="user-id-display" class="text-xs text-gray-400 mt-1">ID Usuario: Cargando...</p>
+        </header>
+
+        <!-- Indicador de Carga -->
+        <div id="loading-spinner" class="flex justify-center items-center py-8">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+            <span class="ml-4 text-accent">Cargando datos...</span>
+        </div>
+
+        <!-- Dashboard de Resumen (oculto hasta que carguen los datos) -->
+        <section id="dashboard" class="grid grid-cols-1 sm:grid-cols-3 gap-4 hidden">
+            <!-- Tarjeta: Valor Total del Portafolio -->
+            <div class="bg-primary-dark p-4 rounded-lg shadow-lg border-t-4 border-accent">
+                <p class="text-sm text-gray-400">Valor Total Estimado</p>
+                <p id="total-value" class="text-2xl font-bold mt-1">$0.00</p>
+            </div>
+            <!-- Tarjeta: Capital Invertido -->
+            <div class="bg-primary-dark p-4 rounded-lg shadow-lg border-t-4 border-secondary-dark">
+                <p class="text-sm text-gray-400">Capital Invertido</p>
+                <p id="total-invested" class="text-2xl font-bold mt-1">$0.00</p>
+            </div>
+            <!-- Tarjeta: Ganancia/Pérdida (P/L) -->
+            <div id="pl-card" class="bg-primary-dark p-4 rounded-lg shadow-lg border-t-4 border-loss">
+                <p class="text-sm text-gray-400">Ganancia/Pérdida (P/L)</p>
+                <p id="total-pl" class="text-2xl font-bold mt-1">$0.00</p>
+                <p id="total-pl-percent" class="text-sm mt-1">0.00%</p>
+            </div>
+        </section>
+
+        <!-- Gráfico de Distribución (Pie Chart) -->
+        <section id="chart-section" class="bg-primary-dark p-4 rounded-lg shadow-xl hidden">
+            <h2 class="text-xl font-semibold mb-3 text-accent border-b border-secondary-dark pb-2">Distribución de Activos</h2>
+            <div id="pie-chart" class="w-full" style="height: 300px;"></div>
+        </section>
+
+        <!-- Formulario de Ingreso de Transacción -->
+        <section class="bg-primary-dark p-4 rounded-lg shadow-xl">
+            <h2 class="text-xl font-semibold mb-4 text-accent">Registrar Nueva Compra (Brutal)</h2>
+            <form id="transaction-form" class="space-y-3">
+                <!-- Símbolo de Acción (Ticker) -->
+                <div>
+                    <label for="symbol" class="block text-sm font-medium text-gray-300">Símbolo (Ej: TSLA, AAPL)</label>
+                    <input type="text" id="symbol" class="mt-1 block w-full p-2 bg-secondary-dark border border-gray-600 rounded-md shadow-sm focus:ring-accent focus:border-accent uppercase text-white" required placeholder="TICKER">
+                </div>
+                <!-- Cantidad de Acciones -->
+                <div>
+                    <label for="shares" class="block text-sm font-medium text-gray-300">Cantidad de Acciones</label>
+                    <input type="number" id="shares" step="0.01" min="0.01" class="mt-1 block w-full p-2 bg-secondary-dark border border-gray-600 rounded-md shadow-sm focus:ring-accent focus:border-accent text-white" required placeholder="1.0">
+                </div>
+                <!-- Costo Total Pagado -->
+                <div>
+                    <label for="total-cost" class="block text-sm font-medium text-gray-300">Costo Total Pagado (USD)</label>
+                    <input type="number" id="total-cost" step="0.01" min="0.01" class="mt-1 block w-full p-2 bg-secondary-dark border border-gray-600 rounded-md shadow-sm focus:ring-accent focus:border-accent text-white" required placeholder="1000.00">
+                </div>
+                <!-- Botón de Ingreso -->
+                <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-accent hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-primary-dark focus:ring-accent transition duration-150">
+                    Añadir Compra
+                </button>
+                <div id="form-message" class="text-sm text-center pt-2"></div>
+            </form>
+        </section>
+
+        <!-- Lista de Transacciones -->
+        <section class="bg-primary-dark p-4 rounded-lg shadow-xl">
+            <h2 class="text-xl font-semibold mb-4 text-accent border-b border-secondary-dark pb-2">Transacciones Registradas</h2>
+            <div id="transactions-list" class="space-y-2 text-sm max-h-60 overflow-y-auto">
+                <!-- Las transacciones se cargarán aquí -->
+                <p class="text-gray-500 text-center">No hay transacciones registradas.</p>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Modal de Mensajes (Reemplazo para alert()) -->
+    <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-75 hidden z-50 flex items-center justify-center">
+        <div class="bg-primary-dark p-6 rounded-lg shadow-2xl max-w-sm w-full border border-accent">
+            <h3 id="modal-title" class="text-xl font-bold mb-3 text-accent">Título</h3>
+            <p id="modal-body" class="text-gray-300 mb-4">Cuerpo del mensaje.</p>
+            <button onclick="closeModal()" class="w-full py-2 px-4 rounded-md text-sm font-medium text-white bg-accent hover:bg-blue-600 transition duration-150">
+                Entendido
+            </button>
+        </div>
+    </div>
+
+    <!-- Scripts de Firebase y Lógica Principal -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, onSnapshot, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Configuración Inicial de Firebase
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db;
+        let auth;
+        let userId = null;
+        let isAuthReady = false;
+        let portfolioChart;
+
+        // Elementos del DOM
+        const dashboardEl = document.getElementById('dashboard');
+        const chartSectionEl = document.getElementById('chart-section');
+        const loadingSpinnerEl = document.getElementById('loading-spinner');
+        const totalValueEl = document.getElementById('total-value');
+        const totalInvestedEl = document.getElementById('total-invested');
+        const totalPLEl = document.getElementById('total-pl');
+        const totalPLPercentEl = document.getElementById('total-pl-percent');
+        const plCardEl = document.getElementById('pl-card');
+        const transactionsListEl = document.getElementById('transactions-list');
+        const formMessageEl = document.getElementById('form-message');
+        const userIdDisplayEl = document.getElementById('user-id-display');
+
+        // Inicializar ECharts
+        document.addEventListener('DOMContentLoaded', () => {
+            const chartDom = document.getElementById('pie-chart');
+            if (chartDom) {
+                portfolioChart = echarts.init(chartDom, 'dark', { renderer: 'canvas' });
+            }
+            initializeFirebase();
+        });
+
+        // --- MOCK DE DATOS DE MERCADO ---
+        // En una aplicación real, esta función haría una llamada a una API de mercado (ej: Alpha Vantage, Finnhub, etc.)
+        // para obtener los precios actuales. Aquí usamos un mock de precios para simular la funcionalidad.
+        const mockStockPrices = {
+            'TSLA': 205.50,
+            'AAPL': 175.20,
+            'GOOGL': 140.80,
+            'MSFT': 400.10,
+            'AMZN': 180.50,
+            'NVDX': 950.00,
+            // Precios aleatorios para cualquier otro símbolo
+            getRandomPrice: (symbol) => (Math.random() * (200 - 50) + 50).toFixed(2)
+        };
+
+        const getStockPrice = (symbol) => {
+            const price = mockStockPrices[symbol.toUpperCase()];
+            if (price) {
+                return price;
+            }
+            // Si el símbolo no está en el mock, se le asigna un precio aleatorio
+            return parseFloat(mockStockPrices.getRandomPrice(symbol));
+        };
+
+        // --- FUNCIONES DE UTILIDAD ---
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+        }
+
+        function showModal(title, body, isError = false) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-body').textContent = body;
+            const backdrop = document.getElementById('modal-backdrop');
+            backdrop.classList.remove('hidden');
+
+            const modalTitleEl = document.getElementById('modal-title');
+            if (isError) {
+                modalTitleEl.classList.add('text-loss');
+                modalTitleEl.classList.remove('text-accent');
+            } else {
+                modalTitleEl.classList.remove('text-loss');
+                modalTitleEl.classList.add('text-accent');
+            }
+        }
+
+        window.closeModal = function() {
+            document.getElementById('modal-backdrop').classList.add('hidden');
+        }
+
+        // --- LÓGICA DE FIREBASE Y AUTENTICACIÓN ---
+
+        async function initializeFirebase() {
+            try {
+                // setLogLevel('debug'); // Descomentar para ver logs de Firestore
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        userIdDisplayEl.textContent = `ID Usuario: ${userId}`;
+                    } else {
+                        // Si no hay usuario (aún no autenticado), se intenta con el token o anónimamente
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    }
+                    // Una vez que el estado de autenticación se ha resuelto
+                    isAuthReady = true;
+                    if (userId) {
+                        startPortfolioListener();
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error al inicializar Firebase:", error);
+                showModal("Error Crítico", `No se pudo conectar a la base de datos. ${error.message}`, true);
+                loadingSpinnerEl.classList.add('hidden');
+            }
+        }
+
+        // --- LÓGICA DE TRANSACCIONES Y CÁLCULO ---
+
+        /**
+         * Procesa la lista de transacciones y calcula las métricas del portafolio.
+         * @param {Array<Object>} transactions - La lista cruda de transacciones de Firestore.
+         */
+        function calculatePortfolioMetrics(transactions) {
+            const holdings = {};
+            let totalInvested = 0;
+
+            // 1. Consolidar Posesiones
+            transactions.forEach(tx => {
+                const symbol = tx.symbol.toUpperCase();
+                totalInvested += tx.totalCost;
+
+                if (!holdings[symbol]) {
+                    holdings[symbol] = {
+                        symbol: symbol,
+                        shares: 0,
+                        averageCost: 0,
+                        totalCost: 0,
+                        currentPrice: getStockPrice(symbol) // Obtener precio mock
+                    };
+                }
+
+                // Cálculo del Costo Promedio Ponderado
+                const newTotalCost = holdings[symbol].totalCost + tx.totalCost;
+                const newTotalShares = holdings[symbol].shares + tx.shares;
+
+                holdings[symbol].totalCost = newTotalCost;
+                holdings[symbol].shares = newTotalShares;
+                holdings[symbol].averageCost = newTotalCost / newTotalShares;
+            });
+
+            // 2. Calcular Valor Actual y P/L
+            let totalValue = 0;
+            const portfolioData = [];
+
+            Object.values(holdings).forEach(holding => {
+                const value = holding.shares * holding.currentPrice;
+                holding.currentValue = value;
+                holding.pl = value - holding.totalCost;
+                totalValue += value;
+
+                // Preparar datos para el gráfico
+                portfolioData.push({
+                    name: holding.symbol,
+                    value: value,
+                    totalCost: holding.totalCost // Para el tooltip
+                });
+            });
+
+            const totalPL = totalValue - totalInvested;
+            const totalPLPercent = totalInvested > 0 ? (totalPL / totalInvested) * 100 : 0;
+
+            // 3. Renderizar y Actualizar UI
+            updateDashboard(totalValue, totalInvested, totalPL, totalPLPercent);
+            updatePieChart(portfolioData);
+            renderTransactionsList(transactions, holdings);
+
+            loadingSpinnerEl.classList.add('hidden');
+            dashboardEl.classList.remove('hidden');
+            chartSectionEl.classList.remove('hidden');
+        }
+
+        function updateDashboard(totalValue, totalInvested, totalPL, totalPLPercent) {
+            totalValueEl.textContent = formatCurrency(totalValue);
+            totalInvestedEl.textContent = formatCurrency(totalInvested);
+            totalPLEl.textContent = formatCurrency(totalPL);
+            totalPLPercentEl.textContent = `${totalPLPercent.toFixed(2)}%`;
+
+            // Estilo de la tarjeta P/L (Brutal)
+            plCardEl.classList.remove('border-loss', 'border-profit');
+            totalPLEl.classList.remove('text-loss', 'text-profit', 'text-white');
+            totalPLPercentEl.classList.remove('text-loss', 'text-profit', 'text-white');
+
+            if (totalPL > 0.01) {
+                plCardEl.classList.add('border-profit');
+                totalPLEl.classList.add('text-profit');
+                totalPLPercentEl.classList.add('text-profit');
+            } else if (totalPL < -0.01) {
+                plCardEl.classList.add('border-loss');
+                totalPLEl.classList.add('text-loss');
+                totalPLPercentEl.classList.add('text-loss');
+            } else {
+                plCardEl.classList.add('border-secondary-dark');
+                totalPLEl.classList.add('text-white');
+                totalPLPercentEl.classList.add('text-white');
+            }
+        }
+
+        function updatePieChart(data) {
+            const chartOptions = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function (params) {
+                        const totalCost = params.data.totalCost ? formatCurrency(params.data.totalCost) : 'N/A';
+                        return `
+                            <strong>${params.name}</strong><br/>
+                            Valor Actual: ${formatCurrency(params.value)} (${params.percent}%)<br/>
+                            Costo Original: ${totalCost}
+                        `;
+                    }
+                },
+                legend: {
+                    top: 'bottom',
+                    textStyle: { color: '#e2e8f0' } // slate-200
+                },
+                series: [
+                    {
+                        name: 'Distribución',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: 18,
+                                fontWeight: 'bold',
+                                color: '#fff'
+                            }
+                        },
+                        labelLine: {
+                            show: true
+                        },
+                        data: data.sort((a, b) => b.value - a.value),
+                        itemStyle: {
+                            borderRadius: 8,
+                            borderColor: '#0f172a',
+                            borderWidth: 2
+                        }
+                    }
+                ]
+            };
+            portfolioChart.setOption(chartOptions);
+            // Asegura que el gráfico se redibuje al cambiar el tamaño (clave para responsividad)
+            window.addEventListener('resize', () => portfolioChart.resize());
+        }
+
+        function renderTransactionsList(transactions, holdings) {
+            transactionsListEl.innerHTML = '';
+            if (transactions.length === 0) {
+                transactionsListEl.innerHTML = '<p class="text-gray-500 text-center">No hay transacciones registradas.</p>';
+                return;
+            }
+
+            // Ordenar por fecha (asumiendo que las transacciones tienen un campo 'date' o un timestamp)
+            // Por simplicidad, ordenaremos por el ID de Firestore si no hay fecha.
+            transactions.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+            transactions.forEach(tx => {
+                const symbol = tx.symbol.toUpperCase();
+                const holding = holdings[symbol] || {};
+                const costPerShare = tx.totalCost / tx.shares;
+                const plColor = holding.pl > 0.01 ? 'text-profit' : (holding.pl < -0.01 ? 'text-loss' : 'text-gray-400');
+                const sharesDisplay = tx.shares % 1 === 0 ? tx.shares.toFixed(0) : tx.shares.toFixed(2); // Muestra decimales solo si son necesarios
+                const date = tx.timestamp ? new Date(tx.timestamp).toLocaleDateString() : 'N/A';
+
+                const txEl = document.createElement('div');
+                txEl.className = 'flex justify-between items-center bg-secondary-dark p-3 rounded-md border-l-4 border-accent';
+                txEl.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="text-white font-bold">${symbol}</span>
+                        <span class="text-xs text-gray-400">Compró ${sharesDisplay} @ ${formatCurrency(costPerShare)}</span>
+                        <span class="text-xs text-gray-500">${date}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="font-semibold ${plColor}">${formatCurrency(tx.totalCost)}</span>
+                        <button data-id="${tx.id}" class="delete-btn text-loss hover:text-red-700 transition duration-150 p-1 rounded-full">
+                            <!-- Icono de Bote de Basura (SVG) -->
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                `;
+                transactionsListEl.appendChild(txEl);
+            });
+
+            // Añadir event listeners a los botones de eliminar
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const txId = e.currentTarget.dataset.id;
+                    await deleteTransaction(txId);
+                });
+            });
+        }
+
+        // Escuchar cambios en Firestore
+        function startPortfolioListener() {
+            if (!db || !userId) return;
+
+            const txCollectionPath = `/artifacts/${appId}/users/${userId}/portfolio_transactions`;
+            const q = query(collection(db, txCollectionPath));
+
+            onSnapshot(q, (snapshot) => {
+                const transactions = [];
+                snapshot.forEach((doc) => {
+                    transactions.push({ id: doc.id, ...doc.data() });
+                });
+                console.log("Datos de transacciones recibidos:", transactions.length);
+                calculatePortfolioMetrics(transactions);
+            }, (error) => {
+                console.error("Error al escuchar transacciones:", error);
+                showModal("Error de Sincronización", "No se pudo sincronizar con Firestore.", true);
+            });
+        }
+
+        // --- LÓGICA DE FORMULARIO ---
+
+        const transactionForm = document.getElementById('transaction-form');
+        transactionForm.addEventListener('submit', handleFormSubmit);
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            formMessageEl.textContent = '';
+            
+            const symbolInput = document.getElementById('symbol');
+            const sharesInput = document.getElementById('shares');
+            const totalCostInput = document.getElementById('total-cost');
+
+            const symbol = symbolInput.value.trim().toUpperCase();
+            const shares = parseFloat(sharesInput.value);
+            const totalCost = parseFloat(totalCostInput.value);
+            const timestamp = Date.now();
+
+            if (!symbol || isNaN(shares) || shares <= 0 || isNaN(totalCost) || totalCost <= 0) {
+                showModal("Error de Entrada", "Por favor, complete todos los campos correctamente. Cantidad y Costo deben ser positivos.", true);
+                return;
+            }
+
+            if (!isAuthReady || !userId) {
+                showModal("Error", "La autenticación no está lista. Intente de nuevo.", true);
+                return;
+            }
+
+            try {
+                const txCollectionPath = `/artifacts/${appId}/users/${userId}/portfolio_transactions`;
+                
+                await addDoc(collection(db, txCollectionPath), {
+                    symbol: symbol,
+                    shares: shares,
+                    totalCost: totalCost,
+                    timestamp: timestamp
+                });
+
+                formMessageEl.textContent = `¡Transacción de ${symbol} registrada!`;
+                formMessageEl.className = 'text-sm text-center pt-2 text-profit';
+
+                // Limpiar formulario
+                symbolInput.value = '';
+                sharesInput.value = '';
+                totalCostInput.value = '';
+            } catch (error) {
+                console.error("Error al añadir documento:", error);
+                formMessageEl.textContent = "Error al guardar la transacción.";
+                formMessageEl.className = 'text-sm text-center pt-2 text-loss';
+                showModal("Error de Firestore", `No se pudo registrar la transacción. ${error.message}`, true);
+            }
+        }
+        
+        async function deleteTransaction(docId) {
+             if (!isAuthReady || !userId) {
+                showModal("Error", "La autenticación no está lista. No se puede eliminar.", true);
+                return;
+            }
+            try {
+                const txCollectionPath = `/artifacts/${appId}/users/${userId}/portfolio_transactions`;
+                await deleteDoc(doc(db, txCollectionPath, docId));
+                showModal("Transacción Eliminada", "La compra ha sido retirada de tu portafolio.", false);
+            } catch (error) {
+                console.error("Error al eliminar documento:", error);
+                showModal("Error de Eliminación", `No se pudo eliminar la transacción. ${error.message}`, true);
+            }
+        }
+
+    </script>
+</body>
+</html>

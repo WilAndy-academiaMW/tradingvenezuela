@@ -1,118 +1,138 @@
-let chart;
+// -------------------- INICIALIZAR GRÁFICO --------------------
+const chartDom = document.getElementById('chart-container');
+const myChart = echarts.init(chartDom);
 
-// Cargar CSV genérico
-async function cargarCSV(ruta) {
-  const resp = await fetch(ruta);
-  const texto = await resp.text();
-  return texto.trim().split('\n').slice(1).map(linea => linea.split(','));
+let fechas = [];
+let valores = [];
+
+// Estado de líneas de tendencia
+
+
+// Configuración base inicial
+const option = {
+  title: { text: 'bdv/ves', left: 'center' },
+  tooltip: { trigger: 'axis' },
+  xAxis: { type: 'category', data: [], scale: true, boundaryGap: false },
+  yAxis: { scale: true },
+  series: [{ id: 'candlestick', type: 'candlestick', name: 'BDV', data: [] }],
+  dataZoom: [
+    { type: 'inside', minValueSpan: 5 },
+    { type: 'slider', minValueSpan: 5 }
+  ]
+};
+myChart.setOption(option);
+
+// -------------------- FUNCIONES --------------------
+
+// Cargar CSV y actualizar gráfico
+function cargarCSV(ruta, label) {
+  fetch(ruta)
+    .then(res => res.text())
+    .then(texto => {
+      const filas = texto.trim().split("\n");
+      filas.shift(); // quitar cabecera
+      fechas = [];
+      valores = [];
+      filas.forEach(linea => {
+        const [Date,Open,High,Low,Close] = linea.split(",");
+        fechas.push(Date);
+        valores.push([+Open, +Close, +Low, +High]);
+      });
+
+      // Usamos cargarGrafica para limpiar y actualizar
+      cargarGrafica(label, { fechas, velas: valores });
+
+      console.log(`✅ Gráfico actualizado: ${label} desde ${ruta}`);
+    })
+    .catch(err => console.error("Error cargando CSV:", err));
 }
 
-// Renderizar velas japonesas en USD
-async function renderCandles(ruta, label) {
-  // 1) Cargar precios del activo en Bs
-  const precios = await cargarCSV(ruta);
-
-  // 2) Cargar tasas de cambio desde bolivar.csv
-  const tasas = await cargarCSV('archivos/bolivar.csv');
-  const mapaTasas = {};
-  tasas.forEach(([date, open, high, low, close]) => {
-    mapaTasas[date] = parseFloat(close); // usamos Precio_Cierre como tasa
-  });
-
-  // 3) Convertir cada precio usando la tasa de ese día
-  const valores = [];
-  window.currentData = []; // guardar datos para indicadores
-
-  precios.forEach(([date, open, high, low, close]) => {
-    const tasa = mapaTasas[date];
-    if (!tasa) return;
-
-    const fecha = new Date(date).getTime(); // Highcharts usa timestamp en ms
-    const o = parseFloat(open) / tasa;
-    const h = parseFloat(high) / tasa;
-    const l = parseFloat(low) / tasa;
-    const c = parseFloat(close) / tasa;
-
-    valores.push([fecha, o, h, l, c]);
-
-    window.currentData.push({ Date: date, Open: o, High: h, Low: l, Close: c });
-  });
-
-  // 4) Crear gráfico con Highcharts
-  chart = Highcharts.stockChart('chart-container', {
-    chart: { backgroundColor: '#000' },
-    title: { text: label + ' (USD)', style: { color: '#fff' } },
-    rangeSelector: { selected: 1 },
-    xAxis: { labels: { style: { color: '#fff' } } },
-    yAxis: { labels: { style: { color: '#fff' } }, gridLineColor: '#333' },
-    tooltip: {
-      split: false,
-      formatter: function () {
-        const point = this.point; // ✅ usar this.point en vez de this.points[0]
-        return Highcharts.dateFormat('%Y-%m-%d', point.x) +
-          '<br/>Open: ' + point.open.toFixed(2) +
-          '<br/>High: ' + point.high.toFixed(2) +
-          '<br/>Low: ' + point.low.toFixed(2) +
-          '<br/>Close: ' + point.close.toFixed(2);
+// Cargar gráfica limpia (borra líneas de tendencia viejas)
+function cargarGrafica(activo, data) {
+  const option = {
+    title: { text: `${activo}/USD`, left: 'center' },
+    tooltip: { trigger: 'axis' },
+    xAxis: { type: 'category', data: data.fechas, scale: true, boundaryGap: false },
+    yAxis: { scale: true },
+    series: [
+      {
+        id: 'candlestick',
+        type: 'candlestick',
+        name: activo,
+        data: data.velas
       }
-    },
-    series: [{
-      type: 'candlestick',
-      name: label,
-      data: valores,
-      color: '#ff0000',      // velas bajistas
-      upColor: '#00ff00',    // velas alcistas
-      lineColor: '#ff0000',
-      upLineColor: '#00ff00'
-    }]
+    ],
+    dataZoom: [
+      { type: 'inside', minValueSpan: 5 },
+      { type: 'slider', minValueSpan: 5 }
+    ]
+  };
+
+  // true = reemplaza todo, borra líneas viejas
+  myChart.setOption(option, true);
+
+  // Resetear estado de tendencia
+  tendenciaClicks = [];
+  modoTendencia = false;
+
+  mostrarMensaje(`Gráfica cargada: ${activo}. Líneas de tendencia borradas.`);
+}
+
+// Actualizar gráfico con rango filtrado
+function actualizarGrafico(fechasFiltradas, valoresFiltrados) {
+  myChart.setOption({
+    xAxis: { data: fechasFiltradas },
+    series: [{ id: 'candlestick', data: valoresFiltrados }]
   });
 }
 
-// Función para dibujar un cuadrado
-function activarDibujo() {
-  if (!chart) return;
+// Filtrar por rango temporal
+function filtrarRango(meses) {
+  const ahora = new Date(fechas[fechas.length - 1]); // última fecha
+  const limite = new Date(ahora);
+  limite.setMonth(limite.getMonth() - meses);
 
-  chart.addAnnotation({
-    draggable: 'xy', // permite mover/redimensionar con el mouse
-    shapes: [{
-      type: 'rect',
-      point: { xAxis: 0, yAxis: 0, x: Date.UTC(2023,10,21), y: 100 },
-      width: 24 * 3600 * 1000 * 2, // ancho en milisegundos (2 días)
-      height: 5,                   // altura en unidades del eje Y
-      fill: 'rgba(0,255,0,0.3)',
-      stroke: 'green'
-    }]
+  const fechasFiltradas = [];
+  const valoresFiltrados = [];
+
+  fechas.forEach((f, i) => {
+    const fecha = new Date(f);
+    if (fecha >= limite) {
+      fechasFiltradas.push(f);
+      valoresFiltrados.push(valores[i]);
+    }
   });
+
+  actualizarGrafico(fechasFiltradas, valoresFiltrados);
+
+  mostrarMensaje(`Mostrando últimos ${meses} meses (${fechasFiltradas.length} velas)`);
 }
 
-// Inicializar con un activo por defecto y botones
-document.addEventListener('DOMContentLoaded', () => {
-  renderCandles('archivos/bdv.csv', 'Banco de Venezuela');
 
-  document.querySelectorAll('.right-panel button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const ruta = btn.getAttribute('data-path');
-      const label = btn.getAttribute('data-label');
-      if (!ruta) return;
-      renderCandles(ruta, label);
-    });
+
+// -------------------- EVENTOS --------------------
+
+// Botones de rango temporal
+document.getElementById("1m").onclick = () => filtrarRango(1);
+document.getElementById("3m").onclick = () => filtrarRango(3);
+document.getElementById("6m").onclick = () => filtrarRango(6);
+document.getElementById("1a").onclick = () => filtrarRango(12);
+document.getElementById("2a").onclick = () => filtrarRango(24);
+
+// Botones de criptomonedas
+document.querySelectorAll("ul li button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const ruta = "archivos/" + btn.dataset.path;
+    const label = btn.dataset.label;
+    cargarCSV(ruta, label);
   });
 });
 
-// 👉 Función para dibujar una línea
-function activarLinea() {
-  if (!chart) return;
+// -------------------- CARGA INICIAL --------------------
+cargarCSV("archivos/bdv.csv", "bdv");
 
-  chart.addAnnotation({
-    draggable: 'xy', // permite mover y redimensionar con el mouse
-    shapes: [{
-      type: 'path',   // usamos "path" para una línea
-      points: [
-        { xAxis: 0, yAxis: 0, x: Date.UTC(2023,10,21), y: 100 },
-        { xAxis: 0, yAxis: 0, x: Date.UTC(2023,10,23), y: 110 }
-      ],
-      stroke: 'yellow',
-      strokeWidth: 2
-    }]
-  });
+
+// -------------------- MENSAJES --------------------
+function mostrarMensaje(texto) {
+  document.getElementById("mensaje").innerText = texto;
 }
