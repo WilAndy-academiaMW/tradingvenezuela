@@ -21,8 +21,9 @@
     </div>
     <div class="menu">
      <a href="index.html">💵 Precios en Bolívares</a>
-     <a href="index2.html">💲 Precios en Dólares</a>
+     <a href="index2.html">💲 bolsa de valores de caracas</a>
      <a href="index3.html">📊 analisis de datos</a>
+      <a href="index4.html">📊 criptomonedas</a>
 <!--   <a href="index4.html">📂 Portafolio</a> -->  
      </div>
    </nav>
@@ -30,43 +31,27 @@
   <div class="main">
      <div class="panel left-panel">
        <h3>Suite de Herramientas</h3>
-
-       <!--linea de tendencia-->
-         
-       <!--ondas de eliot -->
        <div class="tool-buttons">
-
-        <div class="pivote-control"> 
-          <button id="btn-tendencia">Lineas de Tendencia</button>
-          <input type="range" id="range-linea" min="0" max="100" value="0">
-          <span id="range-label">0%</span>
-           <button id="dibujar">dibujar linea</button>
-         </div>
-         <div class="pivote-control">
-            <button id="btn-ondas">ondas de heliot</button>
-            <div style="display: flex; justify-content: center; "> 
-             <button id="ondas1" >1</button>
-             <button id="ondas2">2</button>
-             <button id="ondas3">3</button>
-             <button id="ondas4">4</button>
-             <button id="ondas5">5</button>
-            </div>   
-         </div>
-
+     
+       
+         
+           <div class="pivote-control">
+       <button id="btn-fibonacci">fibonacci</button>
+           </div>
+<div class="pivote-control">
+          <button id="btn-pivotes">Lineas de Pivote</button>
+          <input type="range" id="tol" min="0.0005" max="0.1" step="0.01" value="0.5">
+        </div>
          <!--regla-->
           <div class="pivote-control">
             <button id="btn-regla">Regla</button>
         </div>
-        <!--fibonacci-->
-         <div class="pivote-control">
-       <button id="btn-fibonacci">fibonacci</button>
-           </div>
+        
         
         <!--zonas pivotes-->
-         <div class="pivote-control">
-          <button id="btn-pivotes">Lineas de Pivote</button>
-          <input type="range" id="tol" min="0.0005" max="0.1" step="0.01" value="0.5">
-        </div>
+           <!--zonas pivotes-->
+         
+       
       </div>
 </div>
 
@@ -87,15 +72,115 @@
      <h3>Activos</h3>
       <ul>
         <li >
-          <button data-path="archivos\btc.csv"  data-label="BTC" data-tol="50">
-            <img src="img/btc.png" alt="BTC" style="width: 20px; height: 20px;">
-            BTC/USD
+          <button data-path="archivos\bdv.csv"  data-label="banco de venezuela" data-tol="50">
+            <img src="img/imgA/bdv.png" alt="BTC" style="width: 20px; height: 20px;">
+            BDV/USD
           </button>
         </li>
         <li >
-          <button data-path="archivos\XRP.csv" data-label="XRP">
-            <img src="img/btc.png" alt="banco de Venezuela" style="width: 20px; height: 20px;">
-            XRP/USD
+          <button data-path="archivos\bdcv.csv" data-label="BDVC">
+            <img src="img/imgA/bdvc.png" alt="bolsa de carcas" style="width: 20px; height: 20px;">
+            BDVC/USD
+          </button>
+        </li>
+          <li >
+          <button data-path="archivos\provincial.csv" data-label="provincial">
+            <img src="img/imgA/provincial.png" alt="provincial" style="width: 20px; height: 20px;">
+            Provincial/USD
+          </button>
+          <button data-path="archivos\mercantil.csv" data-label="mercantil">
+            <img src="img/imgA/mercantil.png" alt="mercantil" style="width: 20px; height: 20px;">
+            mercantil/USD
+          </button>
+        </li>
+          <li >
+          <button data-path="archivos\envases.csv" data-label="envases">
+            <img src="img/imgA/envases.png" alt="envases" style="width: 20px; height: 20px;">
+            ENVASE/USD
+          </button>
+        </li>
+         <li >
+          <button data-path="archivos\bnc.csv" data-label="BNC">
+            <img src="img/imgA/bnc.png" alt="BNC" style="width: 20px; height: 20px;">
+            BNC/USD
+          </button>
+        </li>
+        <li >
+          <button data-path="archivos\proagro.csv" data-label="Proagro">
+            <img src="img/imgA/proagro.png" alt="Proagro" style="width: 20px; height: 20px;">
+            Proagro/USD
+          </button>
+        </li>
+         <li >
+          <button data-path="archivos\Protinal.csv" data-label="Protinal">
+            <img src="img/imgA/protinal.svg" alt="Protinal" style="width: 20px; height: 20px;">
+            Protinal/USD
+          </button>
+        </li>
+         <li >
+          <button data-path="archivos\efe.csv" data-label="EFE">
+            <img src="img/imgA/efe.png" alt="efe" style="width: 20px; height: 20px;">
+            EFE/USD
+          </button>
+        </li>
+        <li >
+          <button data-path="archivos\Siderurgica Venezolana.csv" data-label="sinvesa">
+            <img src="img/imgA/sinvesa.png" alt="sinvesa" style="width: 20px; height: 20px;">
+            sinvesa/USD
+          </button>
+        </li>
+        <li >
+          <button data-path="archivos\Manufacturas de Papel CA.csv" data-label="sinvesa">
+            <img src="img/imgA/Manpa.png" alt="sinvesa" style="width: 20px; height: 20px;">
+            Manufacturas de Papel/USD
+          </button>
+        </li>
+         <li >
+          <button data-path="archivos\Telares de Palo Grande.csv" data-label="  telares palo grandes/USD">
+            <img src="img/imgA/telares.png" alt="sinvesa" style="width: 20px; height: 20px;">
+             telares palo grandes/USD
+          </button>
+        </li>
+          <li >
+          <button data-path="archivos\ron.csv" data-label="Ron Santa Teresa">
+            <img src="img/imgA/santaTeresa.png" alt="sinvesa" style="width: 20px; height: 20px;">
+             ron santa teresa/USD
+          </button>
+        </li>
+         <li >
+          <button data-path="archivos\Dominguez & Ci.csv" data-label="Dominguez & Cia.csv">
+            <img src="img/imgA/DOM.png" alt="sinvesa" style="width: 20px; height: 20px;">
+             domiguez y sia/USD
+          </button>
+        </li>
+         <li >
+          <button data-path="archivos\Banco del Caribe.csv" data-label="caribe">
+            <img src="img/imgA/caribe.png" alt="sinvesa" style="width: 20px; height: 20px;">
+             caribe/USD
+          </button>
+        </li>
+            <li >
+          <button data-path="archivos\montesco.csv" data-label="montesco">
+            <img src="img/imgA/montesco.png" alt="montesco" style="width: 20px; height: 20px;">
+             montesco/USD
+          </button>
+        </li>
+          <li >
+          <button data-path="archivos\montesco.csv" data-label=" clave capital">
+            <img src="img/imgA/perCapital.png" alt=" clave capital" style="width: 20px; height: 20px;">
+             clave capital/USD
+          </button>
+        </li>
+          <li >
+          <button data-path="archivos\INVACA.csv" data-label="INVACA">
+            <img src="img/imgA/invanca.png" alt=" clave capital" style="width: 20px; height: 20px;">
+             INVACA/USD
+          </button>
+        </li>
+           <li >
+          <button data-path="archivos\Corimon.csv" data-label="Corimon">
+            <img src="img/imgA/corimon.png" alt=" clave capital" style="width: 20px; height: 20px;">
+             Corimon/USD
           </button>
         </li>
       </ul>
@@ -105,7 +190,6 @@
   <div class="footer">
   <button id="btn-rsi">RSI</button>
   <button id="btn-macd">MACD</button>
-  <button id="btn-ichimoku">Ichimoku</button>
   <button id="btn-bb">Bandas de Bollinger</button>
 
 
@@ -113,12 +197,14 @@
 
 </div>
 
-<Script src="criptomonedas/js/grafico.js"></Script>
-<Script src="criptomonedas/js/ondas de heliot.js"></Script>
-<Script src="criptomonedas/js/regla.js"></Script>
-<Script src="criptomonedas/js/linea.js"></Script>
-<Script src="criptomonedas/js/fibonnaci.js"></Script>
+<Script src="bolsaDvalores/js/grafico.js"></Script>
+<Script src="bolsaDvalores/js/linea.js"></Script>
+<Script src="bolsaDvalores/js/ondas de heliot.js"></Script>
+<Script src="bolsaDvalores/js/regla.js"></Script>
+<!--<Script src="criptomonedas/js/zonas.js"></Script>-->
+<Script src="bolsaDvalores/js/fibonnaci.js"></Script>
 <Script src="criptomonedas/js/zonapivote.js"></Script>
 <Script src="criptomonedas/js/indicador.js"></Script>
+<Script src="bolsaDvalores/js/hch.js"></Script>
 </body>
 </html>
