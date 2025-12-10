@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Portafolio Brutal</title>
+
+  <!-- Librería Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Tus estilos -->
+  <link rel="stylesheet" href="../static/css/style.css">
+  <link rel="stylesheet" href="../../css/index.css">
+  <link rel="stylesheet" href="../../css/nav.css">
+  <link rel="stylesheet" href="../../css/foter.css">
+</head>
+<body>
+  <nav>
+    <div class="perfil">
+      <img src="../../img/imgA/bdvc.png" alt="">
+      <img src="../../img/btc.png" alt="">
+      <h1>trading Venezuela</h1>
+    </div>
+    <div class="menu">
+      <a href="../../index.html">💵 Precios en Bolívares</a>
+      <a href="../../index2.html">💲 Bolsa de Valores de Caracas</a>
+      <a href="../../index3.html">📊 Análisis de datos</a>
+      <a href="../../index4.html">📊 Criptomonedas</a>
+      <a href="portafolio/templates/index.html">📊 Portafolio</a>
+    </div>
+  </nav>
+
+  <header>
+    <h1>📈 Mi Portafolio</h1>
+    <p>Saldo total y evolución de inversiones</p>
+  </header>
+
+  <main>
+    <section class="saldo">
+      <h2>Saldo Total</h2>
+      <div id="saldoTotal">$0</div>
+    </section>
+
+    <section class="chart-container">
+      <h2>Evolución del saldo</h2>
+      <canvas id="lineChart"></canvas>
+    </section>
+
+    <section class="acciones-form">
+      <h2>🛒 Operaciones</h2>
+      <div class="botones-operacion">
+        <button class="btn-compra">Comprar</button>
+        <button class="btn-venta">Vender</button>
+      </div>
+    </section>
+
+    <section class="acciones">
+      <h2>📊 Mis Acciones</h2>
+      <table class="tabla-acciones">
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th>Cantidad</th>
+            <th>Precio de compra</th>
+            <th>g/p</th>
+            <th>% del portafolio</th>
+          </tr>
+        </thead>
+        <tbody id="tablaBody">
+          <!-- Se llenará dinámicamente -->
+        </tbody>
+      </table>
+    </section>
+
+    <section class="rendimiento-barras">
+      <h2>📊 Rendimiento por Acción</h2>
+      <canvas id="barChart"></canvas>
+    </section>
+  </main>
+
+  <footer>
+    <p>Hecho con Flask + Chart.js</p>
+  </footer>
+
+  <!-- Modal de operaciones -->
+  <div id="modalOperacion" class="modal">
+    <div class="modal-content">
+      <span id="cerrarModal" class="cerrar">&times;</span>
+      <h2 id="tituloOperacion">Operación</h2>
+      <form id="formOperacion">
+        <label for="ticker">Acción:</label>
+        <select id="ticker" name="ticker">
+          <option value="AAPL">AAPL</option>
+          <option value="TSLA">TSLA</option>
+          <option value="MSFT">MSFT</option>
+        </select>
+
+        <label for="cantidad">Cantidad:</label>
+        <input type="number" id="cantidad" name="cantidad" required>
+
+        <label for="precio">Precio:</label>
+        <input type="number" id="precio" name="precio" required>
+
+        <button type="submit" id="btnConfirmar">Confirmar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts al final -->
+  <script src="../static/js/charts.js"></script>
+  <script src="../static/js/main.js"></script>
+  <script src="../static/js/operaciones.js"></script>
+</body>
+</html>

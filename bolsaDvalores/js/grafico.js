@@ -9,7 +9,7 @@ let tasasCambio = []; // precio del bolívar en USD
 // -------------------- FUNCIONES --------------------
 
 // Cargar CSV de tasas de cambio (bolívar/USD)
-function cargarTasasCambio(ruta = "archivos/bolivar.csv") {
+function cargarTasasCambio(ruta = "bolsaDvalores/archivos/bolivar.csv") {
   return fetch(ruta)
     .then(res => res.text())
     .then(texto => {

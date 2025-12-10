@@ -1,0 +1,216 @@
+body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #0d1117;
+    color: #e6edf3;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+header {
+    background: #161b22;
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+    border-bottom: 2px solid #30363d;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    color: #58a6ff;
+}
+
+main {
+    padding: 30px;
+}
+
+.saldo {
+    background: #161b22;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px auto;
+    width: 80%;
+    box-shadow: 0 0 15px rgba(88,166,255,0.2);
+}
+
+#saldoTotal {
+    font-size: 2rem;
+    color: #3fb950;
+    margin-top: 10px;
+}
+
+.chart-container {
+    background: #161b22;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px auto;
+    width: 80%;
+    box-shadow: 0 0 15px rgba(88,166,255,0.2);
+}
+
+.acciones {
+    background: #161b22;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 30px auto;
+    width: 80%;
+    box-shadow: 0 0 15px rgba(88,166,255,0.2);
+}
+
+.acciones h2 {
+    color: #58a6ff;
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+}
+
+.tabla-acciones {
+    width: 100%;
+    border-collapse: collapse;
+    color: #e6edf3;
+    font-size: 1rem;
+}
+
+.tabla-acciones th,
+.tabla-acciones td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #30363d;
+    text-align: center;
+}
+
+.tabla-acciones th {
+    background-color: #0d1117;
+    color: #8b949e;
+    font-weight: 600;
+}
+
+.tabla-acciones tr:hover {
+    background-color: #21262d;
+}
+
+.acciones-form {
+    background: #161b22;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 30px auto;
+    width: 80%;
+    box-shadow: 0 0 15px rgba(88,166,255,0.2);
+}
+
+.acciones-form h2 {
+    color: #58a6ff;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.botones-operacion {
+    display: flex;
+    justify-content: space-around;
+}
+
+.btn-compra,
+.btn-venta {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    color: #fff;
+}
+
+.btn-compra {
+    width: 40%;
+    background-color: #238636;
+}
+
+.btn-compra:hover {
+    background-color: #2ea043;
+}
+
+.btn-venta {
+      width: 40%;
+    background-color: #da3633;
+}
+
+.btn-venta:hover {
+    background-color: #f85149;
+}
+
+.rendimiento-barras {
+    background: #161b22;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 30px auto;
+    width: 80%;
+    box-shadow: 0 0 15px rgba(88,166,255,0.2);
+}
+
+.rendimiento-barras h2 {
+    color: #58a6ff;
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+}
+
+
+
+.modal {
+  display: none; /* oculto por defecto */
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: #161b22;
+  padding: 20px;
+  border-radius: 12px;
+  width: 300px;
+  color: #e6edf3;
+  box-shadow: 0 0 15px rgba(88,166,255,0.3);
+}
+
+.modal-content h2 {
+  color: #58a6ff;
+  margin-bottom: 15px;
+}
+
+.modal-content label {
+  display: block;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.modal-content input,
+.modal-content select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 6px;
+  border: none;
+}
+
+.modal-content button {
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #238636;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.modal-content button:hover {
+  background-color: #2ea043;
+}
+
+.cerrar {
+  float: right;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
