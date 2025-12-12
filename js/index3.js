@@ -11,6 +11,9 @@ const usd_ves_filename = "bdvc/tasa_dolar_bcv.csv";
 const contratos = "bdvc/Títulos_negociados.csv";
 const variacion = "bdvc/Variación.csv";
 const efectivo = "bdvc/Monto_efectivo_Bs.csv";
+const capitalizacion = "bdvc/titulosTotal.csv";
+
+
 
 // --- Variables globales ---
 let datos_precios_bs = null; 
@@ -130,6 +133,27 @@ function graficarEfectivoUsd(colIndex) {
         }
     });
 }
+function mostrarCapitalizacion(colIndex) {
+    // Última fila de precios
+    const ultimaFilaPrecios = datos_precios_bs[datos_precios_bs.length - 1];
+    const precioBs = parseFloat(ultimaFilaPrecios[colIndex]);
+
+    // Acciones circulantes (una sola fila en titulosTotal.csv)
+    const filaAcciones = datos_acciones[1] || datos_acciones[0];
+    const acciones = parseFloat(filaAcciones[colIndex - 1]); // -1 porque precios tiene columna Fecha
+
+    // Calcular capitalización
+    const totalBs = precioBs * acciones;
+    const totalUsd = totalBs / tasa_usd_bcv;
+
+    // Mostrar en HTML
+    document.getElementById("Capitalización-bs").innerHTML =
+        totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2 }) + " Bs";
+    document.getElementById("Capitalización-usd").innerHTML =
+        totalUsd.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+}
+
+
 
 // --- Inicialización ---
 async function inicializarApp() {
@@ -139,6 +163,8 @@ async function inicializarApp() {
     contratosN = await cargarCSV(contratos);
     datosVariacion = await cargarCSV(variacion);
     datosEfectivo = await cargarCSV(efectivo);
+    datos_acciones = await cargarCSV(capitalizacion);
+
 
     // Extraer tasa USD BCV
     const ultima_tasa_usd_fila = datos_usd[datos_usd.length - 1]; 
@@ -148,7 +174,8 @@ async function inicializarApp() {
     mostrarPrecios(1);                 // Precio BDV
     graficarVolumen(1, "Volumen BDV"); // Volumen BDV
     graficarEfectivoBs(1);             // Efectivo BDV en Bs
-    graficarEfectivoUsd(1);            // Efectivo BDV en USD
+    graficarEfectivoUsd(1);    
+     mostrarCapitalizacion(1);        // Efectivo BDV en USD
 
     // --- Botones de acciones ---
 
@@ -157,6 +184,7 @@ async function inicializarApp() {
         graficarVolumen(1, "Volumen caribe");
         graficarEfectivoBs(1);
         graficarEfectivoUsd(1);
+        mostrarCapitalizacion(1);  
     });
     document.getElementById("btn-arca").addEventListener('click', () => {
         mostrarPrecios(2);
@@ -169,6 +197,7 @@ async function inicializarApp() {
         graficarVolumen(3, "Volumen BNC");
         graficarEfectivoBs(3);
         graficarEfectivoUsd(3);
+        mostrarCapitalizacion(3);  
     });
      
     document.getElementById("btn-provincial").addEventListener('click', () => {
@@ -176,55 +205,87 @@ async function inicializarApp() {
         graficarVolumen(4, "Volumen Provincial");
         graficarEfectivoBs(4);
         graficarEfectivoUsd(4);
+        mostrarCapitalizacion(4);
     });
     document.getElementById("btn-bdvc").addEventListener('click', () => {
         mostrarPrecios(5);
         graficarVolumen(5, "Volumen BNC");
         graficarEfectivoBs(5);
         graficarEfectivoUsd(5);
+         mostrarCapitalizacion(5);
     });
     document.getElementById("btn-bdv").addEventListener('click', () => {
         mostrarPrecios(6);
         graficarVolumen(6, "Volumen BDV");
         graficarEfectivoBs(6);
         graficarEfectivoUsd(6);
+        mostrarCapitalizacion(6);
     });
     document.getElementById("btn-C.CAPITAL B").addEventListener('click', () => {
         mostrarPrecios(7);
         graficarVolumen(7, "Volumen C.CAPITAL B");
         graficarEfectivoBs(7);
         graficarEfectivoUsd(7);
+        mostrarCapitalizacion(7);
     });
     document.getElementById("btn-ceramica").addEventListener('click', () => {
         mostrarPrecios(8);
         graficarVolumen(8, "Volumen ceramica carabobo");
         graficarEfectivoBs(8);
         graficarEfectivoUsd(8);
+         mostrarCapitalizacion(8);
     });
       document.getElementById("btn-grupoQuimico").addEventListener('click', () => {
-        mostrarPrecios(8);
-        graficarVolumen(8, "Volumen grupo zuleano");
-        graficarEfectivoBs(8);
-        graficarEfectivoUsd(8);
+        mostrarPrecios(9);
+        graficarVolumen(9, "Volumen grupo zuleano");
+        graficarEfectivoBs(9);
+        graficarEfectivoUsd(9);
+        mostrarCapitalizacion(9);
+    });
+    document.getElementById("btn-corimon").addEventListener('click', () => {
+        mostrarPrecios(10);
+        graficarVolumen(10, "Volumen corimon");
+        graficarEfectivoBs(10);
+        graficarEfectivoUsd(10);
+        mostrarCapitalizacion(10);
+    });
+   
+    document.getElementById("btn-DOMINGUEZ & CIA").addEventListener('click', () => {
+        mostrarPrecios(11);
+        graficarVolumen(11, " DOMINGUEZ & CIA");
+        graficarEfectivoBs(11);
+        graficarEfectivoUsd(11);
+        mostrarCapitalizacion(11);
+    });
+     document.getElementById("btn-efe").addEventListener('click', () => {
+        mostrarPrecios(12);
+        graficarVolumen(12, "Volumen efe");
+        graficarEfectivoBs(12);
+        graficarEfectivoUsd(12);
+           mostrarCapitalizacion(12);
     });
 
       document.getElementById("btn-envase").addEventListener('click', () => {
-        mostrarPrecios(12);
-        graficarVolumen(12, "Envases Venezolano");
-        graficarEfectivoBs(12);
-        graficarEfectivoUsd(12);
+        mostrarPrecios(13);
+        graficarVolumen(13, "Envases Venezolano");
+        graficarEfectivoBs(13);
+        graficarEfectivoUsd(13);
+         mostrarCapitalizacion(13);
     });
-      document.getElementById("btn-efe").addEventListener('click', () => {
-        mostrarPrecios(11);
-        graficarVolumen(11, "Volumen efe");
-        graficarEfectivoBs(11);
-        graficarEfectivoUsd(11);
+     document.getElementById("btn-cemento").addEventListener('click', () => {
+        mostrarPrecios(14);
+        graficarVolumen(14, "Volumen mercantil");
+        graficarEfectivoBs(14);
+        graficarEfectivoUsd(14);
+         mostrarCapitalizacion(14);
     });
+     
        document.getElementById("btn-ron").addEventListener('click', () => {
         mostrarPrecios(28);
         graficarVolumen(28, "Volumen ron");
         graficarEfectivoBs(28);
         graficarEfectivoUsd(28);
+         mostrarCapitalizacion(12);
     });
   
      document.getElementById("btn-invanca").addEventListener('click', () => {
@@ -232,13 +293,16 @@ async function inicializarApp() {
         graficarVolumen(18, "Volumen invanca");
         graficarEfectivoBs(18);
         graficarEfectivoUsd(18);
+         mostrarCapitalizacion(12);
     });
       document.getElementById("btn-mercantil").addEventListener('click', () => {
         mostrarPrecios(22);
         graficarVolumen(22, "Volumen mercantil");
         graficarEfectivoBs(22);
         graficarEfectivoUsd(22);
+         mostrarCapitalizacion(12);
     });
+    
      document.getElementById("btn-manpa").addEventListener('click', () => {
         mostrarPrecios(19);
         graficarVolumen(19, "Volumen Manpa");
@@ -275,6 +339,7 @@ async function inicializarApp() {
         graficarVolumen(15, "Volumen grupo zuleano");
         graficarEfectivoBs(15);
         graficarEfectivoUsd(15);
+        
     });
    
 }

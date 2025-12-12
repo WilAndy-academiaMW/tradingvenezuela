@@ -50,7 +50,7 @@ def seleccionar_y_exportar_columna_unica(
 # Si tu archivo Último_precio_Bs.csv tiene la Fecha en la columna 1 (Índice 0),
 # y el precio de ABC.A en la columna 2 (Índice 1), usarías estos valores:
 
-RUTA_ORIGEN = r'bdvc\Último_precio_Bs.csv' 
+RUTA_ORIGEN = r'bdvc\Monto_efectivo_Bs.csv' 
 RUTA_DESTINO = r'bdvc\ABC.A.csv' 
 
 # 0 = Columna 1 del CSV (Probablemente la Fecha)

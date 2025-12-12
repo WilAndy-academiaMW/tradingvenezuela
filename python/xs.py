@@ -1,9 +1,9 @@
 import pandas as pd
 
-archivo_entrada = r"bdvc\Último_precio_Bs.csv"
-columna_origen = "IVC.A"
-archivo_salida = r"acciones\IVC.A\IVC.A.csv"
-columna_destino = "Último Precio (Bs)"
+archivo_entrada = r"bdvc\Monto_efectivo_Bs.csv"
+columna_origen = "IVC.B"
+archivo_salida = r"acciones\IVC.B\IVC.B.csv"
+columna_destino = "Monto Efectivo (Bs)"
 
 # Leer solo la columna origen
 df_origen = pd.read_csv(archivo_entrada, usecols=[columna_origen])

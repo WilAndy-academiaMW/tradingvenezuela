@@ -39,7 +39,7 @@ const nombresEmpresas = {
   "RST.B": 'R.S.TERESA "B"',
   "SVS": "SIVENSA, S.A.",
   "TDV.D": "CANTV CLASE (D)",
-  "TPG": "T. PALO GRANDE"
+  "TPG": "T. PALO GRANDE",
 };
 
 // Conversión segura de números con formato es-VE (puntos miles, coma decimal)
@@ -148,9 +148,9 @@ function mostrarTabla(dias) {
 // Botones
 document.querySelector(".botones button:nth-child(1)").onclick = () => mostrarTabla(1);   // 24h
 document.querySelector(".botones button:nth-child(2)").onclick = () => mostrarTabla(2);   // 48h
-document.querySelector(".botones button:nth-child(3)").onclick = () => mostrarTabla(15);  // 7 días (ajusta si tu CSV es por día)
-document.querySelector(".botones button:nth-child(4)").onclick = () => mostrarTabla(30);  // 1 mes
-document.querySelector(".botones button:nth-child(5)").onclick = () => mostrarTabla(60);  // 2 meses
+document.querySelector(".botones button:nth-child(3)").onclick = () => mostrarTabla(7);  // 7 días (ajusta si tu CSV es por día)
+document.querySelector(".botones button:nth-child(4)").onclick = () => mostrarTabla(15);  // 1 mes
+document.querySelector(".botones button:nth-child(5)").onclick = () => mostrarTabla(30);  // 2 meses
 
 // Orden dinámico
 let ordenAsc = true;

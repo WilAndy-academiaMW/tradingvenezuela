@@ -61,7 +61,7 @@ try:
     print(f"✅ Extracción Exitosa: El precio del dólar BCV es: {precio_usd} Bs por USD.")
 
     # 7. GUARDAR EL DATAFRAME EN UN ARCHIVO CSV
-    nombre_archivo_csv = "tasa_dolar_bcv.csv"
+    nombre_archivo_csv = "bdvc/tasa_dolar_bcv.csv"
     
     # Comprobar si el archivo ya existe
     if os.path.exists(nombre_archivo_csv):

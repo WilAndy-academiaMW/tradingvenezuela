@@ -44,6 +44,12 @@ ACTIVOS_A_DESCARGAR = {
     "CRM-A.CR":"corimon.csv",
     "BNC.CR":"bnc.csv",
     "CCP-B.CR":"clave capital.csv",
+    "CGQ.CR":"grupo quimico.csv",
+    "TDV-D.CR":"cantv.csv",
+   
+    "IMP-B.CR":"IMPULSA V.C.csv",
+   
+    "ICP-B.CR":" Crecepymes ",
 }
 
 

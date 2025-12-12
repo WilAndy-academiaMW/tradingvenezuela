@@ -1,68 +1,83 @@
 import yfinance as yf
 import pandas as pd
 from datetime import datetime, timedelta
+import os
 
-# --- Configuración ---
-TICKER = "PTN.CR" 
+# --- 1. CONFIGURACIÓN GLOBAL ---
+CARPETA_ARCHIVOS = "archivos"
 
-# Usd/Ves:VES=X.. bdvc:BVCC.CR.. ceramica:CCR.CR..provincial:BPV.CR..
-#proagro:PGR.CR..Banco Nacional de Credito:BNC.CR.. "Montesco:MTC-B.CR".. ..
-#..Bitcoin:BTC-USD..Ethereum:ETH-USD..Petroleo:MCL=F..Oro:GC=F..plata:SI=F..
-#..#Corporacion Grupo Quimico:  #..#Telares de Palo Grande:TPG.CR..
-#..#..#.
-
-
-NOMBRE_ARCHIVO = "archivos/protinal.csv" 
-
-
-# Calcular la fecha de inicio: 3 años antes de hoy (ajuste para días bisiestos)
-# Se usa 3 * 365 + 1 = 1096 días para cubrir cualquier día bisiesto potencial.
 TRES_ANOS_ATRAS = datetime.today() - timedelta(days=3 * 365 + 1)
 FECHA_INICIO = TRES_ANOS_ATRAS.strftime('%Y-%m-%d')
-FECHA_FIN = datetime.today().strftime('%Y-%m-%d') # Fecha de hoy
+FECHA_FIN = datetime.today().strftime('%Y-%m-%d')
 
-def descargar_y_filtrar_datos(ticker, inicio, fin, nombre_archivo):
-    """
-    Descarga, filtra y guarda datos históricos (Open, High, Low, Close, Volume)
-    para el período exacto de los últimos 3 años.
-    """
-    print(f"📈 Iniciando descarga de datos para: **{ticker}**")
-    print(f"📅 Período estricto: {inicio} hasta {fin} (últimos 3 años)")
+# --- 2. DICCIONARIO DE ACTIVOS ---
+ACTIVOS_A_DESCARGAR = {
+    "VES=X": "bolivar.csv",
+    "BVCC.CR": "bolsa.csv",
+    "CCR.CR": "ceramica.csv",
+    "BPV.CR": "provincial.csv",
+    "PGR.CR": "proagro.csv",
+    "MTC-B.CR":"Montesco.csv",
+    "EFE.CR":"Efe.csv",
+    "ABC-A.CR":"Banco del Caribe.csv",
+    "IVC-B.CR":"INVACA.csv",
+    "SVS.CR": "Siderurgica Venezolana.csv",
+    "TPG.CR":"Telares de Palo Grande.csv",
+    "RST.CR":"ron.csv",
+    "RST-B.CR":"ron2.csv",
+    "MPA.CR":"Manufacturas de Papel CA.csv",
+    "BVL.CR":"bdv.csv",
+    "MVZ-A.CR": "mercantil.csv",
+    "ENV.CR":"envases.csv",
+    "PTN.CR":"protinal.csv",
+    "FNC.CR":"cemento.csv",
+    "CRM-A.CR":"corimon.csv",
+}
+
+# --- 3. FUNCIÓN DE DESCARGA Y ACTUALIZACIÓN ---
+def descargar_y_actualizar_datos(ticker, inicio, fin, ruta_completa_archivo):
+    print(f"\n--- 📈 Procesando: {ticker} ---")
 
     try:
-        # 1. Descargar los datos (yfinance puede descargar un poco más)
-        datos_completos = yf.download(ticker, start=inicio, end=fin, progress=False)
+        # Descargar datos nuevos
+        datos_nuevos = yf.download(ticker, start=inicio, end=fin, progress=False)
 
-        if datos_completos.empty:
-            print(f"⚠️ Error: No se encontraron datos históricos para {ticker}.")
+        if datos_nuevos.empty:
+            print(f"⚠️ No se encontraron datos para {ticker}")
             return
 
-        # 2. 🎯 FILTRADO ESTRICTO DE 3 AÑOS CON PANDAS 🎯
-        # Forzamos que el DataFrame solo contenga registros desde la fecha de inicio calculada.
-        fecha_corte = pd.to_datetime(inicio)
-        datos_completos = datos_completos[datos_completos.index >= fecha_corte]
-        
-        # 3. Seleccionar las columnas requeridas y renombrar
+        # Filtrar columnas y renombrar
         columnas_requeridas = ['Open', 'High', 'Low', 'Close', 'Volume']
-        datos_filtrados = datos_completos[columnas_requeridas]
-        datos_filtrados.columns = ['Precio_Inicio', 'Alto', 'Bajo', 'Precio_Cierre', 'Volumen']
+        datos_nuevos = datos_nuevos[columnas_requeridas]
+        datos_nuevos.columns = ['Precio_Inicio', 'Alto', 'Bajo', 'Precio_Cierre', 'Volumen']
 
-        # 4. Guardar el DataFrame filtrado a un archivo CSV
-        # La columna 'Date' se guarda automáticamente como la primera columna (índice)
-        datos_filtrados.to_csv(nombre_archivo)
-        
-        # --- Resumen ---
-        print("-" * 50)
-        print(f"✅ ¡Descarga y filtrado completado con éxito!")
-        print(f"Archivo guardado en: **{nombre_archivo}**")
-        print(f"Registros finales: **{len(datos_filtrados)}**")
-        print(f"Columnas: [Date, {', '.join(datos_filtrados.columns)}]")
-        print("-" * 50)
+        # Si ya existe el archivo, cargarlo y combinar
+        if os.path.exists(ruta_completa_archivo):
+            datos_existentes = pd.read_csv(ruta_completa_archivo, index_col=0, parse_dates=True)
+            # Concatenar y eliminar duplicados por índice (fecha)
+            datos_combinados = pd.concat([datos_existentes, datos_nuevos])
+            datos_combinados = datos_combinados[~datos_combinados.index.duplicated(keep='last')]
+        else:
+            datos_combinados = datos_nuevos
+
+        # Guardar actualizado
+        datos_combinados.to_csv(ruta_completa_archivo)
+        print(f"✅ Actualizado {ticker}. Registros totales: {len(datos_combinados)}")
 
     except Exception as e:
-        print(f"❌ Ocurrió un error: {e}")
-        print("Verifique su conexión a Internet y que el ticker sea correcto.")
+        print(f"❌ Error con {ticker}: {e}")
 
+# --- 4. BUCLE PRINCIPAL ---
+if not os.path.exists(CARPETA_ARCHIVOS):
+    os.makedirs(CARPETA_ARCHIVOS)
 
-# 🚀 Ejecutar la función
-descargar_y_filtrar_datos(TICKER, FECHA_INICIO, FECHA_FIN, NOMBRE_ARCHIVO)
+print("-" * 50)
+print("INICIO DE DESCARGA/ACTUALIZACIÓN")
+print("-" * 50)
+
+for ticker, nombre_archivo in ACTIVOS_A_DESCARGAR.items():
+    ruta_completa = os.path.join(CARPETA_ARCHIVOS, nombre_archivo)
+    descargar_y_actualizar_datos(ticker, FECHA_INICIO, FECHA_FIN, ruta_completa)
+
+print("-" * 50)
+print("FIN DEL PROCESO")
