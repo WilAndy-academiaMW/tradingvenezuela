@@ -191,6 +191,7 @@ async function inicializarApp() {
         graficarVolumen(2, "Volumen arca");
         graficarEfectivoBs(2);
         graficarEfectivoUsd(2);
+        mostrarCapitalizacion(2);  
     });
     document.getElementById("btn-bnc").addEventListener('click', () => {
         mostrarPrecios(3);
@@ -262,7 +263,7 @@ async function inicializarApp() {
         graficarVolumen(12, "Volumen efe");
         graficarEfectivoBs(12);
         graficarEfectivoUsd(12);
-           mostrarCapitalizacion(12);
+        mostrarCapitalizacion(12);
     });
 
       document.getElementById("btn-envase").addEventListener('click', () => {
@@ -270,78 +271,138 @@ async function inicializarApp() {
         graficarVolumen(13, "Envases Venezolano");
         graficarEfectivoBs(13);
         graficarEfectivoUsd(13);
-         mostrarCapitalizacion(13);
+        mostrarCapitalizacion(13);
     });
      document.getElementById("btn-cemento").addEventListener('click', () => {
         mostrarPrecios(14);
         graficarVolumen(14, "Volumen mercantil");
         graficarEfectivoBs(14);
         graficarEfectivoUsd(14);
-         mostrarCapitalizacion(14);
+        mostrarCapitalizacion(14);
     });
-     
-       document.getElementById("btn-ron").addEventListener('click', () => {
-        mostrarPrecios(28);
-        graficarVolumen(28, "Volumen ron");
-        graficarEfectivoBs(28);
-        graficarEfectivoUsd(28);
-         mostrarCapitalizacion(12);
-    });
-  
-     document.getElementById("btn-invanca").addEventListener('click', () => {
-        mostrarPrecios(18);
-        graficarVolumen(18, "Volumen invanca");
-        graficarEfectivoBs(18);
-        graficarEfectivoUsd(18);
-         mostrarCapitalizacion(12);
-    });
-      document.getElementById("btn-mercantil").addEventListener('click', () => {
-        mostrarPrecios(22);
-        graficarVolumen(22, "Volumen mercantil");
-        graficarEfectivoBs(22);
-        graficarEfectivoUsd(22);
-         mostrarCapitalizacion(12);
-    });
-    
-     document.getElementById("btn-manpa").addEventListener('click', () => {
-        mostrarPrecios(19);
-        graficarVolumen(19, "Volumen Manpa");
-        graficarEfectivoBs(19);
-        graficarEfectivoUsd(19);
-    });
-      
-      document.getElementById("btn-protinal").addEventListener('click', () => {
-        mostrarPrecios(26);
-        graficarVolumen(26, "Volumen protinal");
-        graficarEfectivoBs(26);
-        graficarEfectivoUsd(26);
-    });
-     document.getElementById("btn-proagro").addEventListener('click', () => {
-        mostrarPrecios(24);
-        graficarVolumen(24, "Volumen proagro");
-        graficarEfectivoBs(24);
-        graficarEfectivoUsd(24);
-    });
-     document.getElementById("btn-telares").addEventListener('click', () => {
-        mostrarPrecios(31);
-        graficarVolumen(31, "Volumen telares palos grandes");
-        graficarEfectivoBs(31);
-        graficarEfectivoUsd(31);
-    });
-       document.getElementById("btn-montesco").addEventListener('click', () => {
-        mostrarPrecios(20);
-        graficarVolumen(20, "Volumen telares palos grandes");
-        graficarEfectivoBs(20);
-        graficarEfectivoUsd(20);
-    });
-      document.getElementById("btn-grupoZ").addEventListener('click', () => {
+     document.getElementById("btn-GRUPO MANTRA").addEventListener('click', () => {
         mostrarPrecios(15);
-        graficarVolumen(15, "Volumen grupo zuleano");
+        graficarVolumen(15, "Volumen GRUPO MANTRA");
         graficarEfectivoBs(15);
         graficarEfectivoUsd(15);
+        mostrarCapitalizacion(15);
+    });
+   document.getElementById("btn-grupoZ").addEventListener('click', () => {
+        mostrarPrecios(16);
+        graficarVolumen(16, "Volumen grupo zuleano");
+        graficarEfectivoBs(16);
+        graficarEfectivoUsd(16);
+        mostrarCapitalizacion(16);
         
     });
-   
+     document.getElementById("btn-CRECEPYMES").addEventListener('click', () => {
+        mostrarPrecios(17);
+        graficarVolumen(17, "Volumen CRECEPYMES");
+        graficarEfectivoBs(17);
+        graficarEfectivoUsd(17);
+        mostrarCapitalizacion(17);
+    });
+     document.getElementById("btn-impulsa").addEventListener('click', () => {
+        mostrarPrecios(18);
+        graficarVolumen(18, "Volumen CRECEPYMES");
+        graficarEfectivoBs(18);
+        graficarEfectivoUsd(18);
+        mostrarCapitalizacion(18);
+    });
+      document.getElementById("btn-invanca").addEventListener('click', () => {
+        mostrarPrecios(19);
+        graficarVolumen(19, "Volumen invanca");
+        graficarEfectivoBs(19);
+        graficarEfectivoUsd(19);
+        mostrarCapitalizacion(18);
+        
+    });
+    document.getElementById("btn-invancab").addEventListener('click', () => {
+        mostrarPrecios(20);
+        graficarVolumen(20, "Volumen invanca");
+        graficarEfectivoBs(20);
+        graficarEfectivoUsd(20);
+        mostrarCapitalizacion(20);
+        
+    });
+     document.getElementById("btn-manpa").addEventListener('click', () => {
+        mostrarPrecios(21);
+        graficarVolumen(21, "Volumen Manpa");
+        graficarEfectivoBs(21);
+        graficarEfectivoUsd(21);
+        mostrarCapitalizacion(21);
+    });
+     document.getElementById("btn-montesco").addEventListener('click', () => {
+        mostrarPrecios(22);
+        graficarVolumen(22, "Volumen montesco");
+        graficarEfectivoBs(22);
+        graficarEfectivoUsd(22);
+        mostrarCapitalizacion(22);
+    });
+     document.getElementById("btn-mercantil").addEventListener('click', () => {
+        mostrarPrecios(24);
+        graficarVolumen(24, "Volumen mercantil");
+        graficarEfectivoBs(24);
+        graficarEfectivoUsd(24);
+        mostrarCapitalizacion(24);
+    });
+     document.getElementById("btn-petrolea").addEventListener('click', () => {
+        mostrarPrecios(25);
+        graficarVolumen(25, "Volumen petrolea");
+        graficarEfectivoBs(25);
+        graficarEfectivoUsd(25);
+        mostrarCapitalizacion(25);
+    });
+      document.getElementById("btn-proagro").addEventListener('click', () => {
+        mostrarPrecios(26);
+        graficarVolumen(26, "Volumen proagro");
+        graficarEfectivoBs(26);
+        graficarEfectivoUsd(26);
+        mostrarCapitalizacion(26);
+    });
+    document.getElementById("btn-protinal").addEventListener('click', () => {
+        mostrarPrecios(28);
+        graficarVolumen(28, "Volumen protinal");
+        graficarEfectivoBs(28);
+        graficarEfectivoUsd(28);
+        mostrarCapitalizacion(28);
+    });
+    
+       document.getElementById("btn-ron").addEventListener('click', () => {
+        mostrarPrecios(30);
+        graficarVolumen(30, "Volumen ron");
+        graficarEfectivoBs(30);
+        graficarEfectivoUsd(30);
+        mostrarCapitalizacion(30);
+    });
+     document.getElementById("btn-ron2").addEventListener('click', () => {
+        mostrarPrecios(31);
+        graficarVolumen(31, "Volumen ron");
+        graficarEfectivoBs(31);
+        graficarEfectivoUsd(31);
+        mostrarCapitalizacion(31);
+    });
+     document.getElementById("btn-sinvesa").addEventListener('click', () => {
+        mostrarPrecios(32);
+        graficarVolumen(32, "Volumen ron");
+        graficarEfectivoBs(32);
+        graficarEfectivoUsd(32);
+        mostrarCapitalizacion(32);
+    });
+     document.getElementById("btn-cantv").addEventListener('click', () => {
+        mostrarPrecios(33);
+        graficarVolumen(32, "Volumen ron");
+        graficarEfectivoBs(33);
+        graficarEfectivoUsd(33);
+        mostrarCapitalizacion(33);
+    });
+     document.getElementById("btn-telares").addEventListener('click', () => {
+        mostrarPrecios(34);
+        graficarVolumen(34, "Volumen telares palos grandes");
+        graficarEfectivoBs(34);
+        graficarEfectivoUsd(34);
+        mostrarCapitalizacion(34);
+    });
 }
 
 
