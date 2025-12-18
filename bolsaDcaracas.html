@@ -34,11 +34,11 @@
        
        <div class="tool-buttons">
          <div class="pivote-control">
-       <button id="btn-fibonacci2">fibonacci</button>
-           </div>
-        <div class="pivote-control">
+             <button id="btn-Canal">Canal paralelo</button>
+          </div>
+      <div class="pivote-control">
           <button id="btn-linea">linea</button>
-        </div>
+      </div>
        
          <div class="pivote-control">
             <button id="btn-ondas">ondas de heliot</button>
@@ -50,7 +50,7 @@
              <button id="ondas5">5</button>
             </div>   
          </div>
-          <div class="pivote-control">
+         <div class="pivote-control">
             <button id="btn-hch">HCH</button>
             <div style="display: flex; justify-content: center; "> 
              <button id="hi" >1</button>
@@ -58,30 +58,34 @@
              <button id="hd">3</button>
             </div>   
          </div>
-           <div class="pivote-control">
+         <div class="pivote-control">
        <button id="btn-fibonacci">fibonacci</button>
-           </div>
-<div class="pivote-control">
+         </div>
+         <div class="pivote-control">
+       <button id="btn-fibogp">fibonacci</button>
+         </div>
+         <div class="pivote-control">
           <button id="btn-pivotes">Lineas de Pivote</button>
           <input type="range" id="tol" min="0.0005" max="0.1" step="0.01" value="0.5">
-        </div>
-         <!--regla-->
-          <div class="pivote-control">
+         </div>
+         <div class="pivote-control">
             <button id="btn-regla">Regla</button>
-        </div>
-         <!--zonas de demanda y oferta
+         </div>
+      
           <div class="pivote-control">
-            <button id="btn-zonas">Zonas de compra y venta</button>
-        </div>-->
-        <!--fibonacci-->
+            <button id="btn-zonadcompra">Zonas de compra</button>
+        </div>
+          <div class="pivote-control">
+            <button id="btn-zonadventa">Zonas de venta</button>
+        </div>
+          <div class="pivote-control">
+            <button id="btn-fvg">FVG</button>
+        </div>
+   
         
-        
-        <!--zonas pivotes-->
-           <!--zonas pivotes-->
-         
-       
+     
       </div>
-</div>
+     </div>
 
 
     <div class="panel center-panel" style="display: flex; flex-direction: column;">
@@ -91,6 +95,7 @@
         <button  id="6m">6M</button>
         <button  id="1a">1A</button>
         <button  id="2a">2A</button>
+         <button  id="3a">3A</button>
       </div>
       <div id="chart-container" style="width:1000px;height:600px;"></div>
      <div id="mensaje" style="width: 100%; height: 100px; color: white;"></div>
@@ -243,7 +248,7 @@
         </li>
       </ul>
      </div>
-    </div>
+  </div>
 
   <div class="footer">
   <button id="btn-rsi">RSI</button>
@@ -260,11 +265,13 @@
 <Script src="bolsaDvalores/js/linea.js"></Script>
 <Script src="bolsaDvalores/js/ondas de heliot.js"></Script>
 <Script src="bolsaDvalores/js/regla.js"></Script>
-<!--<Script src="criptomonedas/js/zonas.js"></Script>-->
+<script src="bolsaDvalores/js/canal paralelo.js"></script>
 <Script src="bolsaDvalores/js/fibonnaci.js"></Script>
 <Script src="criptomonedas/js/zonapivote.js"></Script>
 <Script src="criptomonedas/js/indicador.js"></Script>
 <script src="bolsaDvalores/js/fibonacci2.js"></script>
-<Script src="bolsaDvalores/js/hch.js"></Script>
+<Script src="criptomonedas/js/hch.js"></Script>
+<script src="bolsaDvalores/js/zonas.js"></script>
+<script src="bolsaDvalores/js/fvg.js"></script>
 </body>
 </html>

@@ -1,132 +1,98 @@
 let lineaActiva = false;
-let puntoInicio = null;
+let lineaClicks = 0;
+let puntosLinea = [];
 
-function mostrarMensaje(texto) {
-    const mensajeDiv = document.getElementById('mensaje');
-    if (mensajeDiv) mensajeDiv.textContent = texto;
-}
-
-// ----------------------------------------------------
-// Nueva Función: Desactivar y Limpiar
-// ----------------------------------------------------
-function desactivarLinea() {
-    const chart = echarts.getInstanceByDom(document.getElementById("chart-container"));
-    if (!chart) return;
-
-    lineaActiva = false;
-    puntoInicio = null;
-
-    // Limpiar eventos (crucial)
-    chart.off('click');
-    chart.getZr().off('mousemove');
-
-    // Quitar la línea temporal (limpieza visual)
-    const option = chart.getOption();
-    let series = option.series.filter(s => s.id !== 'linea-temporal');
-    chart.setOption({ series }, { replaceMerge: ['series'] });
-
-    mostrarMensaje("Modo línea cancelado y desactivado.");
-}
-
-
-// ----------------------------------------------------
-// Función: Activar (casi idéntica, pero sin lógica de botón)
-// ----------------------------------------------------
 function activarLinea() {
-    const chart = echarts.getInstanceByDom(document.getElementById("chart-container"));
-    if (!chart) return;
+  const chart = echarts.getInstanceByDom(document.getElementById("chart-container"));
+  if (!chart) {
+    console.error("Linea: no hay gráfico activo.");
+    return;
+  }
 
-    lineaActiva = true;
-    puntoInicio = null;
+  lineaActiva = true;
+  lineaClicks = 0;
+  puntosLinea = [];
+  chart.off('click');
 
-    // limpiar eventos previos
-    chart.off('click');
-    chart.getZr().off('mousemove');
+  mostrarMensaje("Línea de tendencia activada. Haz clic en dos velas.");
 
-    // Primer y segundo clic
-    chart.on('click', function (params) {
-        if (!lineaActiva) return;
-        if (params.seriesType !== 'candlestick') return;
+  chart.on('click', function (params) {
+    if (!lineaActiva) return;
+    if (params.seriesType !== 'candlestick') return;
 
-        // Aquí deberías usar convertFromPixel como discutimos antes para agarrar la mecha!
-        const fecha = params.name;
-        const close = params.data[1]; // Aún toma el cierre, como en tu código original
+    const fecha = params.name;
+    const valores = params.data;
 
-        if (!puntoInicio) {
-            // Primer clic
-            puntoInicio = { fecha, precio: close };
-            mostrarMensaje(`Inicio en ${fecha} → Cierre USD ${close.toFixed(2)}. Haz clic para el punto final o presiona el botón para cancelar.`);
-        } else {
-            // Segundo clic → fijar línea definitiva
-            const puntoFinal = { fecha, precio: close };
+    // Según tu SCG: bajo en [3], alto en [4]
+    const precioAlto = valores[4];
 
-            const option = chart.getOption();
-            let series = option.series.slice();
+    puntosLinea.push({ fecha, alto: precioAlto });
+    lineaClicks++;
 
-            // quitar línea temporal
-            series = series.filter(s => s.id !== 'linea-temporal');
+    mostrarMensaje(`Click ${lineaClicks}: ${fecha} → Alto: ${precioAlto}`);
 
-            series.push({
-                id: 'linea-definitiva-' + Date.now(),
-                type: 'line',
-                data: [[puntoInicio.fecha, puntoInicio.precio], [puntoFinal.fecha, puntoFinal.precio]],
-                lineStyle: { color: '#00ffff', width: 2 },
-                symbol: 'circle',
-                symbolSize: 8,
-                itemStyle: { color: '#00ffff' }
-            });
+    if (lineaClicks % 2 === 0) {
+      const p1 = puntosLinea[lineaClicks - 2];
+      const p2 = puntosLinea[lineaClicks - 1];
 
-            chart.setOption({ series }, { replaceMerge: ['series'] });
-            mostrarMensaje(`Línea fijada entre ${puntoInicio.fecha} y ${puntoFinal.fecha}`);
+      const option = chart.getOption();
+      const fechas = option.xAxis[0].data;
+      const fechaInicio = p1.fecha;
+      const fechaFin = fechas[fechas.length - 1]; // hasta el final de la gráfica
 
-            // 🔴 Desactivar modo línea automáticamente después de dibujar
-            desactivarLinea(); // Llamamos a la función de desactivación
-        }
-    });
+      const series = option.series.slice();
+      const idxVela = series.findIndex(s => (s.type === 'candlestick'));
+      if (idxVela === -1) return;
 
-    // Mouse libre → mover línea temporal
-    chart.getZr().on('mousemove', function (event) {
-        if (!lineaActiva || !puntoInicio) return;
+      if (!series[idxVela].markLine) {
+        series[idxVela].markLine = { data: [] };
+      }
 
-        const pos = chart.convertFromPixel({ xAxisIndex: 0, yAxisIndex: 0 }, [event.offsetX, event.offsetY]);
-        const fechaIndex = Math.round(pos[0]);
-        const precioY = pos[1];
+      // Determinar qué alto usar como inicio y fin
+      let altoInicio, altoFin;
+      if (p1.alto > p2.alto) {
+        altoInicio = p1.alto;
+        altoFin = p2.alto;
+      } else {
+        altoInicio = p2.alto;
+        altoFin = p1.alto;
+      }
 
-        // Se asume que la variable 'fechas' está definida globalmente
-        if (fechaIndex < 0 || fechaIndex >= fechas.length) return;
-        const fecha = fechas[fechaIndex];
+      // Línea de tendencia entre los dos altos extendida hasta el final
+      series[idxVela].markLine.data.push([
+        { coord: [fechaInicio, altoInicio], lineStyle: { color: '#00ff00', width: 2 }, label: { show: false } },
+        { coord: [fechaFin, altoFin],       lineStyle: { color: '#00ff00', width: 2 }, label: { show: false } }
+      ]);
 
-        const option = chart.getOption();
-        let series = option.series.slice();
-
-        series = series.filter(s => s.id !== 'linea-temporal');
-
-        series.push({
-            id: 'linea-temporal',
-            type: 'line',
-            data: [[puntoInicio.fecha, puntoInicio.precio], [fecha, precioY]],
-            lineStyle: { color: '#ffaa00', width: 1, type: 'dashed' },
-            symbol: 'none'
-        });
-
-        chart.setOption({ series }, { replaceMerge: ['series'] });
-    });
-
-    mostrarMensaje("Modo línea ACTIVADO. Haz clic en una vela para empezar.");
+      chart.setOption({ series }, { replaceMerge: ['series'] });
+      mostrarMensaje(`Línea de tendencia dibujada desde ${fechaInicio} hasta ${fechaFin} usando los altos.`);
+    }
+  });
 }
 
-// ----------------------------------------------------
-// Lógica del Botón como Toggle (Interruptor)
-// ----------------------------------------------------
-const btnLinea = document.getElementById("btn-linea");
-if (btnLinea) {
-    btnLinea.addEventListener("click", () => {
-        if (lineaActiva) {
-            // Si está activo, desactiva y limpia
-            desactivarLinea();
-        } else {
-            // Si está inactivo, activa el modo de dibujo
-            activarLinea();
-        }
-    });
+function desactivarLinea() {
+  const chart = echarts.getInstanceByDom(document.getElementById("chart-container"));
+  if (!chart) return;
+
+  const option = chart.getOption();
+  const series = option.series.slice();
+  const idxVela = series.findIndex(s => (s.type === 'candlestick'));
+  if (idxVela !== -1) {
+    series[idxVela].markLine = { data: [] };
+    chart.setOption({ series }, { replaceMerge: ['series'] });
+  }
+
+  lineaActiva = false;
+  lineaClicks = 0;
+  puntosLinea = [];
+  chart.off('click');
+  mostrarMensaje("Línea de tendencia desactivada. Línea borrada.");
 }
+
+document.getElementById("btn-linea").addEventListener("click", () => {
+  if (lineaActiva) {
+    desactivarLinea();
+  } else {
+    activarLinea();
+  }
+});

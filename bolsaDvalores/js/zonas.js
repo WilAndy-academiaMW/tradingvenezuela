@@ -1,73 +1,125 @@
-// -------------------- VARIABLES --------------------
-let zonasMarkArea = [];
+function activarZonaCompra() {
+  const chart = echarts.getInstanceByDom(document.getElementById("chart-container"));
+  if (!chart) {
+    console.error("Zona de compra: no hay gráfico activo.");
+    return;
+  }
 
-// -------------------- BOTÓN ACTIVAR ZONAS --------------------
-document.getElementById("btn-zonas").onclick = () => {
-  // Ya no borramos las zonas aquí, solo mostramos mensaje
-  mostrarMensaje("📌 Haz clic en una vela para marcar su zona.");
-};
+  chart.off('click');
+  mostrarMensaje("Haz clic en una vela para marcar zona de demanda.");
 
-// -------------------- CAPTURA DE CLIC --------------------
-myChart.on('click', function (params) {
-  if (params.componentType !== 'series' || params.seriesType !== 'candlestick') return;
+  chart.on('click', function (params) {
+    if (params.seriesType !== 'candlestick') return;
 
-  const vela = params.data; 
-  const fechaClic = params.name; 
+    const fecha = params.name;
+    const valores = params.data;
 
-  const open  = vela[0];
-  const close = vela[1];
-  const low   = vela[2];
-  const high  = vela[3];
+    // Según tu CSV: Date, Open, High, Low, Close, Volumen
+    const precioHigh = valores[2]; // Alto
+    const precioLow  = valores[3]; // Bajo
 
-  // Invertimos la lógica de colores
-  const esAlcista = close > open;
-  const color = esAlcista ? 'rgba(255,0,0,0.2)' : 'rgba(0,255,0,0.2)'; // alcista → rojo, bajista → verde
-  const borde = esAlcista ? '#ff0000' : '#00ff00';
-  const tipoZona = esAlcista ? 'OFERTA' : 'DEMANDA';
+    const option = chart.getOption();
+    const fechas = option.xAxis[0].data;
+    const fechaFin = fechas[fechas.length - 1]; // hasta el final de la gráfica
 
-  // Obtenemos todas las fechas actuales del eje X
-  const opcionesActuales = myChart.getOption();
-  const datosEjeX = opcionesActuales.xAxis[0].data; 
-  const fechaFin = datosEjeX[datosEjeX.length - 1];
+    const series = option.series.slice();
+    const idxVela = series.findIndex(s => (s.type === 'candlestick'));
+    if (idxVela === -1) return;
 
-  const nuevaZona = [
-    {
-      name: tipoZona,
-      xAxis: fechaClic, 
-      yAxis: high,
-      itemStyle: {
-        color: color,
-        borderWidth: 1,
-        borderColor: borde
-      }
-    },
-    {
-      xAxis: fechaFin,
-      yAxis: low
+    if (!series[idxVela].markArea) {
+      series[idxVela].markArea = { data: [] };
     }
-  ];
 
-  zonasMarkArea.push(nuevaZona);
-
-  myChart.setOption({
-    series: [{
-      markArea: {
-        silent: true,
-        data: zonasMarkArea
+    // Rectángulo verde con texto "Zona de demanda"
+    series[idxVela].markArea.data.push([
+      {
+        name: 'Zona de demanda',
+        coord: [fecha, precioHigh],
+        itemStyle: { color: 'rgba(0, 200, 0, 0.3)' },
+        label: { 
+          show: true, 
+          color: '#fff', 
+          fontWeight: 'bold', 
+          fontStyle: 'italic', 
+          formatter: 'Zona de demanda',
+          position: 'inside', 
+          align: 'center'
+        }
+      },
+      {
+        coord: [fechaFin, precioLow]
       }
-    }]
-  });
+    ]);
 
-  mostrarMensaje(`✅ Zona de ${tipoZona} fijada en ${fechaClic}: ${low} - ${high}`);
+    chart.setOption({ series }, { replaceMerge: ['series'] });
+    mostrarMensaje(`Zona de demanda marcada desde ${fecha} hasta ${fechaFin}`);
+  });
+}
+
+function activarZonaVenta() {
+  const chart = echarts.getInstanceByDom(document.getElementById("chart-container"));
+  if (!chart) {
+    console.error("Zona de venta: no hay gráfico activo.");
+    return;
+  }
+
+  chart.off('click');
+  mostrarMensaje("Haz clic en una vela para marcar zona de oferta.");
+
+  chart.on('click', function (params) {
+    if (params.seriesType !== 'candlestick') return;
+
+    const fecha = params.name;
+    const valores = params.data;
+
+    const precioHigh = valores[2]; // Alto
+    const precioLow  = valores[3]; // Bajo
+
+    const option = chart.getOption();
+    const fechas = option.xAxis[0].data;
+    const fechaFin = fechas[fechas.length - 1];
+
+    const series = option.series.slice();
+    const idxVela = series.findIndex(s => (s.type === 'candlestick'));
+    if (idxVela === -1) return;
+
+    if (!series[idxVela].markArea) {
+      series[idxVela].markArea = { data: [] };
+    }
+
+    // Rectángulo rojo con texto "Zona de oferta"
+    series[idxVela].markArea.data.push([
+      {
+        name: 'Zona de oferta',
+        coord: [fecha, precioHigh],
+        itemStyle: { color: 'rgba(200, 0, 0, 0.3)' },
+        label: { 
+          show: true, 
+          color: '#fff', 
+          fontWeight: 'bold', 
+          fontStyle: 'italic', 
+          formatter: 'Zona de oferta',
+          position: 'inside', 
+          align: 'center'
+        }
+      },
+      {
+        coord: [fechaFin, precioLow]
+      }
+    ]);
+
+    chart.setOption({ series }, { replaceMerge: ['series'] });
+    mostrarMensaje(`Zona de oferta marcada desde ${fecha} hasta ${fechaFin}`);
+  });
+}
+
+// Botones
+document.getElementById("btn-zonadcompra").addEventListener("click", () => {
+  activarZonaCompra();
 });
 
-// -------------------- LIMPIAR SOLO AL CAMBIAR DE GRÁFICO --------------------
-function limpiarZonas() {
-  zonasMarkArea = [];
-  myChart.setOption({
-    series: [{
-      markArea: { data: [] }
-    }]
-  });
-  mostrarMensaje("♻️ Zonas borradas al cambiar de gráfico.");
-}
+document.getElementById("btn-zonadventa").addEventListener("click", () => {
+  activarZonaVenta();
+});
+
+

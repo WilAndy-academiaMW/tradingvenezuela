@@ -199,5 +199,20 @@ body {
   overflow-y: auto;    /* activa scroll vertical solo dentro del panel */
   border: 1px solid #ccc; /* opcional, para ver el área */
   padding: 10px;
+   scrollbar-width: none;   /* Firefox */
+  -ms-overflow-style: none; /* IE y Edge antiguos */
  
+}
+
+.panel.left-panel {
+  max-height: 800px;   /* ajusta la altura que quieras */
+  overflow-y: auto;    /* activa scroll vertical */
+  border: 1px solid #ccc;
+  padding: 10px;
+  scrollbar-width: none;   /* Firefox */
+  -ms-overflow-style: none; /* IE y Edge antiguos */
+}
+
+.panel.left-panel::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge moderno */
 }

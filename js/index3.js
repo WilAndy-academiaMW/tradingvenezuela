@@ -391,7 +391,7 @@ async function inicializarApp() {
     });
      document.getElementById("btn-cantv").addEventListener('click', () => {
         mostrarPrecios(33);
-        graficarVolumen(32, "Volumen ron");
+        graficarVolumen(33, "Volumen ron");
         graficarEfectivoBs(33);
         graficarEfectivoUsd(33);
         mostrarCapitalizacion(33);

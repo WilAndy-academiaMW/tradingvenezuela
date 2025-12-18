@@ -1,198 +1,223 @@
-// -------------------- VARIABLES --------------------
-let modoHCH = false;
-let clicks = []; // almacena todos los clics en orden
-let lineasHCH = []; // líneas dibujadas
+let hchActivo = false;
+let hchClicks = 0;
+let hchPuntos = [];
 
-// -------------------- BOTÓN ACTIVAR HCH --------------------
-// -------------------- BOTÓN ACTIVAR/DESACTIVAR HCH --------------------
-document.getElementById("btn-hch").onclick = () => {
-  if (!modoHCH) {
-    // Activar
-    modoHCH = true;
-    clicks = [];
-    lineasHCH = [];
-    mostrarMensaje("📌 HCH activado, haz click en las velas.");
-  } else {
-    // Desactivar
-    modoHCH = false;
-    clicks = [];
-    lineasHCH = [];
-    actualizarLineas(); // limpia las líneas del gráfico
-    mostrarMensaje("❌ HCH desactivado.");
+function activarHCH() {
+  const chart = echarts.getInstanceByDom(document.getElementById("chart-container"));
+  if (!chart) {
+    console.error("HCH: no hay gráfico activo.");
+    return;
   }
-};
 
-// -------------------- CAPTURA DE CLIC EN VELAS --------------------
-myChart.on('click', function (params) {
-  if (!modoHCH) return;
-  if (params.componentType !== 'series' || params.seriesType !== 'candlestick') return;
+  hchActivo = true;
+  hchClicks = 0;
+  hchPuntos = [];
+  chart.off('click');
 
-  const vela = params.data; // [open, close, low, high]
-  const fecha = params.name;
-  const open  = vela[0];
-  const high  = vela[1];
-  const low   = vela[2];
-  const close = vela[3];
- 
-  clicks.push({ xAxis: fecha, open, close, low, high });
+  mostrarMensaje("HCH activado. Haz 6 clics en velas para capturar Alto y Bajo.");
 
-  // Mensaje general de valores
-  mostrarMensaje(`📍 Click ${clicks.length} en ${fecha} → O:${open} C:${close} L:${low} H:${high}`);
+  chart.on('click', function (params) {
+    if (!hchActivo) return;
+    if (params.seriesType !== 'candlestick') return;
 
-  // Mensajes especiales SOLO en los clics 2, 4 y 6
-  switch (clicks.length) {
-    case 2:
-      mostrarMensaje("🟢 Punto del Hombro Izquierdo (HI) registrado.");
-      break;
-    case 4:
-      mostrarMensaje("🔵 Punto de la Cabeza registrado.");
-      break;
-    case 6:
-      mostrarMensaje("🟣 Punto del Hombro Derecho (HD) registrado.");
-      break;
+    const fecha = params.name;
+    const valores = params.data;
+
+    // Según tu CSV: Date, Open, High, Low, Close, Volumen
+    const precioHigh = valores[4]; // Alto
+    const precioLow  = valores[3]; // Bajo
+
+    hchClicks++;
+    hchPuntos.push({ fecha, high: precioHigh, low: precioLow });
+
+    mostrarMensaje(`Click ${hchClicks}: ${fecha} → Alto: ${precioHigh}, Bajo: ${precioLow}`);
+
+    // Cuando llegamos a 6 clics, mostramos todos los datos
+    if (hchClicks === 6) {
+      let resumen = "Datos capturados para HCH:\n";
+      hchPuntos.forEach((p, i) => {
+        resumen += `Vela ${i+1} (${p.fecha}): Alto=${p.high}, Bajo=${p.low}\n`;
+      });
+      mostrarMensaje(resumen);
+    }
+  });
+}
+function trazarLineaHI() {
+  const chart = echarts.getInstanceByDom(document.getElementById("chart-container"));
+  if (!chart) {
+    console.error("HI: no hay gráfico activo.");
+    return;
   }
+
+  if (hchPuntos.length < 3) {
+    mostrarMensaje("No hay suficientes puntos (mínimo 3 clics).");
+    return;
+  }
+
+  const option = chart.getOption();
+  const series = option.series.slice();
+
+  // Añadimos una nueva serie de tipo line para conectar los clics 1,2,3
+  series.push({
+    name: 'HI',
+    type: 'line',
+    data: [
+      [hchPuntos[0].fecha, hchPuntos[0].low],
+      [hchPuntos[1].fecha, hchPuntos[1].high],
+      [hchPuntos[2].fecha, hchPuntos[2].low]
+    ],
+    lineStyle: {
+      color: 'blue',
+      width: 2,
+      type: 'solid'
+    },
+    symbol: 'circle',
+    symbolSize: 8,
+    itemStyle: {
+      color: 'blue'
+    },
+    label: {
+      show: true,
+      formatter: 'HI',
+      color: '#000',
+      fontWeight: 'bold'
+    }
+  });
+
+  chart.setOption({ series }, { replaceMerge: ['series'] });
+  mostrarMensaje("Línea HI trazada entre clics 1, 2 y 3.");
+}
+
+// Botón "hi"
+document.getElementById("hi").addEventListener("click", () => {
+  trazarLineaHI();
 });
 
-// -------------------- BOTÓN HOMBRO IZQUIERDO --------------------
-document.getElementById("hi").onclick = () => {
-  if (clicks.length < 3) {
-    mostrarMensaje("⚠️ Necesitas 3 clics para el Hombro Izquierdo.");
+
+function trazarCabeza() {
+  const chart = echarts.getInstanceByDom(document.getElementById("chart-container"));
+  if (!chart) {
+    console.error("Cabeza: no hay gráfico activo.");
     return;
   }
 
-  lineasHCH.push([
-    { name: 'HI-1', xAxis: clicks[0].xAxis, yAxis: clicks[0].low },
-    { xAxis: clicks[1].xAxis, yAxis: clicks[1].high }
-  ]);
-  lineasHCH.push([
-    { name: 'HI-2', xAxis: clicks[1].xAxis, yAxis: clicks[1].high },
-    { xAxis: clicks[2].xAxis, yAxis: clicks[2].low }
-  ]);
-
-  actualizarLineas();
-  mostrarMensaje(`✅ Hombro Izquierdo trazado con puntos ${clicks[0].xAxis}, ${clicks[1].xAxis}, ${clicks[2].xAxis}`);
-};
-
-// -------------------- BOTÓN CABEZA --------------------
-document.getElementById("cabeza").onclick = () => {
-  if (clicks.length < 5) {
-    mostrarMensaje("⚠️ Necesitas 5 clics para la Cabeza.");
+  if (hchPuntos.length < 5) {
+    mostrarMensaje("No hay suficientes puntos (mínimo 5 clics).");
     return;
   }
 
-  lineasHCH.push([
-    { name: 'Cabeza-1', xAxis: clicks[2].xAxis, yAxis: clicks[2].low },
-    { xAxis: clicks[3].xAxis, yAxis: clicks[3].high }
-  ]);
-  lineasHCH.push([
-    { name: 'Cabeza-2', xAxis: clicks[3].xAxis, yAxis: clicks[3].high },
-    { xAxis: clicks[4].xAxis, yAxis: clicks[4].low }
-  ]);
+  const option = chart.getOption();
+  const fechas = option.xAxis[0].data;
+  const fechaFin = fechas[fechas.length - 1];
+  const series = option.series.slice();
 
-  actualizarLineas();
-  mostrarMensaje(`✅ Cabeza trazada entre ${clicks[3].xAxis} y ${clicks[4].xAxis}`);
-};
-
-// -------------------- BOTÓN HOMBRO DERECHO --------------------
-document.getElementById("hd").onclick = () => {
-  if (clicks.length < 7) {
-    mostrarMensaje("⚠️ Necesitas 7 clics para el Hombro Derecho.");
-    return;
-  }
-
-  lineasHCH.push([
-    { name: 'HD-1', xAxis: clicks[4].xAxis, yAxis: clicks[4].low },
-    { xAxis: clicks[5].xAxis, yAxis: clicks[5].high }
-  ]);
-  lineasHCH.push([
-    { name: 'HD-2', xAxis: clicks[5].xAxis, yAxis: clicks[5].high },
-    { xAxis: clicks[6].xAxis, yAxis: clicks[6].low }
-  ]);
-  // -------------------- CÁLCULO DEL HOMBRO DERECHO --------------------
-const hombroIzq = clicks[2].high;   // altura hombro izquierdo
-const hombroDer = clicks[4].high;   // altura hombro derecho
-const diferencia = hombroDer - hombroIzq;
-const porcentajeHD = ((diferencia / hombroIzq) * 100).toFixed(2);
-
-mostrarMensaje(`📈 Especulación: el hombro derecho podría subir ≈ ${porcentajeHD}% respecto al hombro izquierdo.`);
-
-
-  actualizarLineas();
-  mostrarMensaje(`✅ Hombro Derecho trazado con puntos ${clicks[5].xAxis}, ${clicks[6].xAxis}`);
-  
-  // -------------------- LÍNEA DE CUELLO --------------------
-  const necklineY = (clicks[0].low + clicks[6].low) / 2; // promedio lows hombros
-  const cabezaY = clicks[3].high; // punto alto de la cabeza
-  const altura = cabezaY - necklineY;
-  const porcentaje = ((altura / necklineY) * 100).toFixed(2);
-
-  // Agregar neckline
-  lineasHCH.push([
-    { name: 'Neckline', xAxis: clicks[0].xAxis, yAxis: clicks[0].low },
-    { xAxis: clicks[6].xAxis, yAxis: clicks[6].low }
-  ]);
-
-  // Texto en el medio de la neckline
-  const midIndex = Math.floor((0 + 6) / 2);
-  const midX = clicks[midIndex].xAxis;
-
-  myChart.setOption({
-    series: [{
-      markPoint: {
-        data: [
-          {
-            name: 'Objetivo',
-            xAxis: midX,
-            yAxis: necklineY,
-            value: porcentaje + '%',
-            label: {
-              show: true,
-              fontSize: 16,
-              color: '#00ff00'
-            }
-          }
-        ]
-      }
-    }]
+  // --- Línea de la cabeza (clics 3,4,5) ---
+  series.push({
+    name: 'Cabeza',
+    type: 'line',
+    data: [
+      [hchPuntos[2].fecha, hchPuntos[2].low],   // click 3 → bajo
+      [hchPuntos[3].fecha, hchPuntos[3].high],  // click 4 → alto
+      [hchPuntos[4].fecha, hchPuntos[4].low]    // click 5 → bajo
+    ],
+    lineStyle: { color: 'red', width: 2 },
+    symbol: 'circle',
+    symbolSize: 8,
+    itemStyle: { color: 'red' },
+    label: { show: true, formatter: 'Cabeza', color: '#000', fontWeight: 'bold' }
   });
 
-  mostrarMensaje(`📉 Neckline trazada. Altura: ${altura.toFixed(2)} → Objetivo ≈ ${porcentaje}%`);
-};
+  // --- Triángulo de la cabeza (relleno azul entre 3-4-5) ---
+  series.push({
+    name: 'Triángulo Cabeza',
+    type: 'line',
+    data: [
+      [hchPuntos[2].fecha, hchPuntos[2].low],   // click 3 → bajo
+      [hchPuntos[3].fecha, hchPuntos[3].high],  // click 4 → alto
+      [hchPuntos[4].fecha, hchPuntos[4].low],   // click 5 → bajo
+      [hchPuntos[2].fecha, hchPuntos[2].low]    // cerrar el triángulo
+    ],
+    lineStyle: { color: 'blue', width: 2 },
+    areaStyle: { color: 'rgba(0,0,255,0.5)' }, // relleno azul semitransparente
+    symbol: 'none'
+  });
 
-// -------------------- FUNCIÓN PARA ACTUALIZAR LÍNEAS --------------------
-function actualizarLineas() {
-  myChart.setOption({
-    series: [{
-      markLine: {
-        symbol: ['circle','circle'],
-        lineStyle: { 
-          color: '#ff0000',
-          type: 'solid',
-          width: 3
-        },
+  // --- Línea de cuello (mínimos de click 3 y click 5) ---
+  series.push({
+    name: 'Neckline',
+    type: 'line',
+    data: [
+      [hchPuntos[2].fecha, hchPuntos[2].low],   // click 3 → bajo
+      [hchPuntos[4].fecha, hchPuntos[4].low]    // click 5 → bajo
+    ],
+    lineStyle: { color: 'blue', width: 2, type: 'dashed' },
+    symbol: 'circle',
+    symbolSize: 6,
+    itemStyle: { color: 'blue' },
+    label: { show: true, formatter: 'Neckline', color: '#000', fontWeight: 'bold' }
+  });
+
+  // --- Rectángulo desde click 5 hasta final con valor del click 2 ---
+  const altoClick2 = hchPuntos[1].high;   // click 2 → alto
+  const bajoClick5 = hchPuntos[4].low;    // click 5 → bajo
+  const fechaClick5 = hchPuntos[4].fecha;
+
+  // Calcular % subida
+  const porcentaje = ((altoClick2 - bajoClick5) / bajoClick5 * 100).toFixed(2);
+
+  const idxVela = series.findIndex(s => s.type === 'candlestick');
+  if (idxVela !== -1) {
+    if (!series[idxVela].markArea) {
+      series[idxVela].markArea = { data: [] };
+    }
+
+    series[idxVela].markArea.data.push([
+      {
+        coord: [fechaClick5, altoClick2],
+        itemStyle: { color: 'rgba(255, 5, 5, 0.8)' }, // fondo opaco negro
         label: {
           show: true,
-          fontSize: 14,
-          color: '#ffffff'
-        },
-        data: lineasHCH
+          color: '#fff',
+          fontWeight: 'bold',
+          fontStyle: 'italic',
+          formatter: `${porcentaje}%`,
+          position: 'inside',
+          align: 'center'
+        }
+      },
+      {
+        coord: [fechaFin, bajoClick5]
       }
-    }]
-  });
-}
-
-// -------------------- FUNCIÓN PARA MENSAJES --------------------
-// -------------------- FUNCIÓN PARA MENSAJES --------------------
-function mostrarMensaje(msg) {
-  // Mostrar en consola (para debug)
-  console.log(msg);
-
-  // Mostrar en el div con id="mensaje"
-  const contenedor = document.getElementById("mensaje");
-  if (contenedor) {
-    contenedor.innerText = msg; // reemplaza el texto
-    // Si quieres acumular mensajes en vez de reemplazar:
-    // contenedor.innerHTML += msg + "<br>";
+    ]);
   }
+
+  chart.setOption({ series }, { replaceMerge: ['series'] });
+  mostrarMensaje("Cabeza trazada: línea, triángulo, cuello y rectángulo con %.");
 }
+
+document.getElementById("cabeza").addEventListener("click", () => {
+  trazarCabeza();
+});
+
+
+
+
+function desactivarHCH() {
+  const chart = echarts.getInstanceByDom(document.getElementById("chart-container"));
+  if (!chart) return;
+
+  hchActivo = false;
+  hchClicks = 0;
+  hchPuntos = [];
+  chart.off('click');
+  mostrarMensaje("HCH desactivado.");
+}
+
+document.getElementById("btn-hch").addEventListener("click", () => {
+  if (hchActivo) {
+    desactivarHCH();
+  } else {
+    activarHCH();
+  }
+});
 

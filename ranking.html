@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking Estratégico de Acciones</title>
+    <!-- Incluyendo Tailwind CSS para un estilo rápido y moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Configuraciones de Tailwind personalizadas para el "estilo brutal" */
+        :root {
+            /* Colores: Fondo Oscuro, Texto Claro, Acento (Teal/Cian) */
+            --color-bg-dark: #121212;
+            --color-text-light: #E0E0E0;
+            --color-accent: #00FFFF; /* Un cian brillante para el acento */
+            --color-secondary-bg: #1E1E1E;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-light);
+            min-height: 100vh;
+        }
+
+        /* Estilo para el contenedor de la tabla para permitir desplazamiento horizontal en móviles */
+        .ranking-table-container {
+            overflow-x: auto;
+            border: 1px solid #333;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            background-color: var(--color-secondary-bg);
+        }
+
+        /* Estilo para las filas impares de la tabla (efecto cebra) */
+        .ranking-table-container tr:nth-child(odd) {
+            background-color: #242424;
+        }
+
+        /* Estilo al pasar el ratón (hover) */
+        .ranking-table-container tr:hover {
+            background-color: #303030;
+            transition: background-color 0.2s ease;
+        }
+        
+        /* Estilo del acento de puntuación (ej. 9.5/10) */
+        .score-badge {
+            background-color: var(--color-accent);
+            color: #121212;
+            font-weight: bold;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px; /* Píldora */
+            box-shadow: 0 0 8px var(--color-accent);
+            white-space: nowrap;
+        }
+
+        /* Columna de Ticker/Acción resaltada */
+        .ticker-col {
+            color: var(--color-accent);
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body class="p-4 sm:p-8">
+
+    <!-- Encabezado Principal y Título -->
+    <header class="text-center mb-12 p-6 rounded-lg bg-[var(--color-secondary-bg)] shadow-lg border-b-4 border-[var(--color-accent)]">
+        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-[var(--color-accent)] mb-2">
+            📊 Ranking Estratégico de Acciones
+        </h1>
+        <p class="text-xl text-gray-400">
+            Las mejores oportunidades de inversión divididas por horizonte temporal.
+        </p>
+    </header>
+
+    <main class="max-w-7xl mx-auto space-y-16">
+
+        <!-- SECCIÓN 1: LARGO PLAZO -->
+        <section id="largo-plazo">
+            <h2 class="text-3xl font-bold mb-6 pb-2 border-b-2 border-gray-600 flex items-center">
+                <span class="text-4xl mr-3">🚀</span> Oportunidades a Largo Plazo
+                <span class="ml-4 text-sm font-normal text-gray-400">(Crecimiento sostenido y valor)</span>
+            </h2>
+
+            <!-- Contenedor Responsive para la Tabla -->
+            <div class="ranking-table-container">
+                <table class="w-full text-left border-collapse">
+                    <!-- Cabecera de la Tabla -->
+                    <thead class="bg-gray-700/50 text-gray-300 uppercase text-sm">
+                        <tr>
+                            <th class="p-4 border-b border-gray-600">#</th>
+                            <th class="p-4 border-b border-gray-600">Acción (Ticker)</th>
+                            <th class="p-4 border-b border-gray-600 hidden md:table-cell">Sector</th>
+                            <th class="p-4 border-b border-gray-600 text-center">Puntuación</th>
+                            <th class="p-4 border-b border-gray-600 hidden sm:table-cell">Comentarios Clave</th>
+                        </tr>
+                    </thead>
+                    <!-- Cuerpo de la Tabla (Datos de Ejemplo) -->
+                    <tbody>
+                        <tr>
+                            <td class="p-4 border-b border-gray-800 font-bold text-[var(--color-accent)]">1</td>
+                            <td class="p-4 border-b border-gray-800 ticker-col">BNC</td>
+                            <td class="p-4 border-b border-gray-800 hidden md:table-cell">Banca</td>
+                            <td class="p-4 border-b border-gray-800 text-center">
+                                <span class="score-badge">9.8/10</span>
+                            </td>
+                            <td class="p-4 border-b border-gray-800 hidden sm:table-cell">
+                                uno de los mejores banco de pais con gran capitalizacion y volumen</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 border-b border-gray-800 font-bold text-[var(--color-accent)]">1</td>
+                            <td class="p-4 border-b border-gray-800 ticker-col">Provincial</td>
+                            <td class="p-4 border-b border-gray-800 hidden md:table-cell">Banca</td>
+                            <td class="p-4 border-b border-gray-800 text-center">
+                                <span class="score-badge">8.0/10</span>
+                            </td>
+                            <td class="p-4 border-b border-gray-800 hidden sm:table-cell">
+                                uno de los mejores banco de pais con gran capitalizacion y volumen</td>
+                        </tr>
+                            <tr>
+                            <td class="p-4 border-b border-gray-800 font-bold text-[var(--color-accent)]">1</td>
+                            <td class="p-4 border-b border-gray-800 ticker-col">Cantv</td>
+                            <td class="p-4 border-b border-gray-800 hidden md:table-cell">tecnologia</td>
+                            <td class="p-4 border-b border-gray-800 text-center">
+                                <span class="score-badge">8.0/10</span>
+                            </td>
+                            <td class="p-4 border-b border-gray-800 hidden sm:table-cell">
+                                uno de los mejores banco de pais con gran capitalizacion y volumen</td>
+                        </tr>
+                       
+                    </tbody>
+                </table>
+            </div>
+            
+            <p class="mt-4 text-xs text-gray-500 text-right">
+                *El ranking a largo plazo se basa en fundamentales y crecimiento proyectado &gt; 5 años.
+            </p>
+        </section>
+
+        <!-- SECCIÓN 2: CORTO PLAZO -->
+        <section id="corto-plazo">
+            <h2 class="text-3xl font-bold mb-6 pb-2 border-b-2 border-gray-600 flex items-center">
+                <span class="text-4xl mr-3">⚡</span> Trading a Corto Plazo
+                <span class="ml-4 text-sm font-normal text-gray-400">(Catalizadores y volatilidad)</span>
+            </h2>
+
+            <!-- Contenedor Responsive para la Tabla -->
+            <div class="ranking-table-container">
+                <table class="w-full text-left border-collapse">
+                    <!-- Cabecera de la Tabla -->
+                    <thead class="bg-gray-700/50 text-gray-300 uppercase text-sm">
+                        <tr>
+                            <th class="p-4 border-b border-gray-600">#</th>
+                            <th class="p-4 border-b border-gray-600">Acción (Ticker)</th>
+                            <th class="p-4 border-b border-gray-600 hidden md:table-cell">Sector</th>
+                            <th class="p-4 border-b border-gray-600 text-center">Puntuación</th>
+                            <th class="p-4 border-b border-gray-600 hidden sm:table-cell">Catalizador / Evento</th>
+                        </tr>
+                        
+                    </thead>
+                    <!-- Cuerpo de la Tabla (Datos de Ejemplo) -->
+                    <tbody>
+                    
+                        <tr>
+                            <td class="p-4 border-b border-gray-800 font-bold text-[var(--color-accent)]">3</td>
+                            <td class="p-4 border-b border-gray-800 ticker-col">ron santa teresa (A)</td>
+                            <td class="p-4 border-b border-gray-800 hidden md:table-cell">ron</td>
+                            <td class="p-4 border-b border-gray-800 text-center">
+                                <span class="score-badge">5/10</span>
+                            </td>
+                            <td class="p-4 border-b border-gray-800 hidden sm:table-cell">soporte que viene respetando desde hace 3 años</td>
+                        </tr>
+                         <tr>
+                            <td class="p-4 border-b border-gray-800 font-bold text-[var(--color-accent)]">3</td>
+                            <td class="p-4 border-b border-gray-800 ticker-col">Manpa</td>
+                            <td class="p-4 border-b border-gray-800 hidden md:table-cell">industrial</td>
+                            <td class="p-4 border-b border-gray-800 text-center">
+                                <span class="score-badge">5/10</span>
+                            </td>
+                            <td class="p-4 border-b border-gray-800 hidden sm:table-cell">soporte que viene respetando desde hace 3 años</td>
+                        </tr>
+                       
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="mt-4 text-xs text-gray-500 text-right">
+                *El ranking a corto plazo se basa en eventos, noticias y análisis técnico &lt; 6 meses.
+            </p>
+        </section>
+
+    </main>
+
+    <!-- Pie de Página (Disclaimer) -->
+    <footer class="mt-16 p-6 text-center text-sm text-gray-500 border-t border-gray-800">
+        <p class="mb-1">&copy; 2025 Mi Ranking Bursátil. Todos los derechos reservados.</p>
+        <p class="text-xs">
+            ⚠️ Descargo de Responsabilidad: Esta página es solo para fines informativos y de entretenimiento.
+            La información no constituye asesoramiento financiero, de inversión, fiscal o legal.
+            Invertir en acciones conlleva riesgo de pérdida. Consulte a un profesional antes de tomar cualquier decisión de inversión.
+        </p>
+    </footer>
+
+</body>
+</html>

@@ -150,6 +150,7 @@ document.getElementById("3m").onclick = () => filtrarRango(3);
 document.getElementById("6m").onclick = () => filtrarRango(6);
 document.getElementById("1a").onclick = () => filtrarRango(12);
 document.getElementById("2a").onclick = () => filtrarRango(24);
+document.getElementById("3a").onclick = () => filtrarRango(36);
 
 // Botones de criptomonedas
 document.querySelectorAll("ul li button").forEach(btn => {
