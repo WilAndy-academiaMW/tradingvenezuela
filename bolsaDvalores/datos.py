@@ -46,10 +46,10 @@ ACTIVOS_A_DESCARGAR = {
     "CCP-B.CR":"clave capital.csv",
     "CGQ.CR":"grupo quimico.csv",
     "TDV-D.CR":"cantv.csv",
-   
     "IMP-B.CR":"IMPULSA V.C.csv",
-   
-    "ICP-B.CR":" Crecepymes ",
+    "ICP-B.CR":" Crecepymes.csv ",
+    "IVC-A.CR":"INVACA.csv",
+    "IVC-B.CR":"INVACAB.csv"
 }
 
 
